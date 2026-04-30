@@ -49,6 +49,7 @@ Der aktuelle Prototyp speichert noch keine Produktivdaten. Supabase ist nur als 
 - `docs/db-schema.md`: Ziel-Datenmodell.
 - `docs/bestandsanalyse-first-try.md`: Analyse der aktuellen Loesung.
 - `docs/architecture.md`: Zielarchitektur fuer Next Gen.
+- `docs/next-agent-briefing.md`: konkrete naechste Schritte fuer weitere Agenten.
 - `legacy-reference/`: read-only Referenzkopien aus First Try fuer andere Agenten.
 - `DEPLOYMENT.md`: Hosting und Runtime.
 - `supabase/schema.sql`: Schema-Referenz, noch nicht angewendet.

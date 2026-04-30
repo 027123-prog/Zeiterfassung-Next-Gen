@@ -200,3 +200,30 @@ Nils moechte, dass andere Agenten am Wochenende alle wichtigen Vorlagen und Orig
 
 - Andere Agenten koennen die Legacy-Dateien gegen die neue Architektur abgleichen.
 - Bei Uebernahmen immer in Next-Gen-Code neu integrieren und dokumentieren.
+
+## 2026-04-30: Naechste Schritte fuer Agenten dokumentiert
+
+### Was gemacht wurde
+
+Ein Agenten-Briefing wurde unter `docs/next-agent-briefing.md` angelegt und in `README.md` sowie `tasks.md` verlinkt.
+
+### Warum
+
+Nils moechte am Wochenende mit anderen Agenten am Projekt weiterarbeiten. Die naechsten Agenten sollen nicht raten muessen, sondern direkt wissen, was zuerst zu lesen ist, welche Grenzen gelten und welche Arbeitsschritte als naechstes sinnvoll sind.
+
+### Wichtige Entscheidungen
+
+- Die naechste sinnvolle Arbeit beginnt bei UI-Angleichung, mehreren Stundenzeilen, Kostenstellen-/Vorlagenpflege und Rollen/Login.
+- Excel soll nicht als neuer Pflegeweg fortgefuehrt werden.
+- Supabase-Migration und Deployment bleiben weiterhin gesperrt, bis Nils sie freigibt.
+
+### Relevante Dateien
+
+- `docs/next-agent-briefing.md`
+- `README.md`
+- `tasks.md`
+
+### Naechste Schritte
+
+- GitHub Issues anhand des Briefings anlegen.
+- Danach konkrete Feature-Arbeit in kleinen, testbaren Schritten umsetzen.

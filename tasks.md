@@ -11,6 +11,7 @@
 - [x] Lokalen Workflow-Prototyp fuer Zuweisung, Pruefung, Rike/Buero und Fertig anlegen.
 - [x] GitHub-Repository fuer Wochenend-Arbeit vorbereiten: `027123-prog/Zeiterfassung-Next-Gen`.
 - [x] First-Try-Eingabe, Viewer und CSV-Vorlagendatei als Referenzkopien ins Repo legen.
+- [x] Briefing fuer naechste Agenten mit sinnvollen Schritten dokumentieren.
 - [ ] Fachlichen Soll-Ablauf mit Nils klaeren.
 - [ ] Hosting-Ziel festlegen.
 
@@ -47,3 +48,13 @@
 - [ ] Deployment dokumentieren.
 - [ ] Backup- und Restore-Ablauf dokumentieren.
 - [ ] Uebergangsphase von `First Try` zu `Next Gen` planen.
+
+## Empfohlene Reihenfolge fuer naechste Agenten
+
+1. Mitarbeiter-UI naeher an First Try bringen.
+2. Mehrere Stundenzeilen pro Tag umsetzen.
+3. Kostenstellen- und Vorlagenpflege fuer Admin/Buero entwerfen.
+4. Login- und Rollenrechte vorbereiten.
+5. GitHub Issues mit Akzeptanzkriterien anlegen.
+
+Details stehen in `docs/next-agent-briefing.md`.
