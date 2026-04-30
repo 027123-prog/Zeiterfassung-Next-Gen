@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stundeneingabe Next Gen</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --line: #d9dee7;
+      --accent: #0f766e;
+      --accent-soft: #e6f4f1;
+      --danger: #b42318;
+      --warning: #9a3412;
+      --ok: #166534;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      padding: 18px 20px;
+    }
+
+    main {
+      width: min(1240px, calc(100% - 32px));
+      margin: 24px auto 48px;
+      display: grid;
+      gap: 18px;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      line-height: 1.15;
+    }
+
+    h1 { font-size: 24px; }
+    h2 { font-size: 18px; }
+    h3 { font-size: 15px; }
+
+    p { margin: 6px 0 0; color: var(--muted); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(380px, 0.9fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+    }
+
+    form {
+      display: grid;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: #344054;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 10px 11px;
+      font: inherit;
+      color: var(--text);
+      background: #fff;
+    }
+
+    textarea {
+      min-height: 76px;
+      resize: vertical;
+    }
+
+    .entry-row {
+      display: grid;
+      grid-template-columns: 1fr 120px 100px 96px;
+      gap: 10px;
+      align-items: end;
+    }
+
+    button {
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      background: var(--accent);
+      color: #fff;
+      font: inherit;
+      font-weight: 800;
+      padding: 10px 13px;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #fff;
+      color: var(--accent);
+    }
+
+    button.warning {
+      background: #fff7ed;
+      border-color: #fed7aa;
+      color: var(--warning);
+    }
+
+    button.ok {
+      background: #ecfdf5;
+      border-color: #bbf7d0;
+      color: var(--ok);
+    }
+
+    .toolbar, .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .status {
+      min-height: 24px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .status.error { color: var(--danger); }
+
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .pill {
+      border: 1px solid #b7d8d3;
+      background: var(--accent-soft);
+      color: #134e4a;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .tab {
+      background: #fff;
+      color: #344054;
+      border-color: #cbd5e1;
+    }
+
+    .tab.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .days {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .day {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+      background: #fff;
+    }
+
+    .day-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .day strong { font-size: 14px; }
+    .day span, .event { color: var(--muted); font-size: 13px; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #334155;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .badge.approved, .badge.office_entered, .badge.done {
+      border-color: #bbf7d0;
+      background: #ecfdf5;
+      color: var(--ok);
+    }
+
+    .badge.change_requested {
+      border-color: #fed7aa;
+      background: #fff7ed;
+      color: var(--warning);
+    }
+
+    .empty {
+      border: 1px dashed #cbd5e1;
+      border-radius: 8px;
+      padding: 14px;
+      color: var(--muted);
+      background: #fbfcfe;
+    }
+
+    @media (max-width: 900px) {
+      .grid, .row, .entry-row {
+        grid-template-columns: 1fr;
+      }
+
+      .day-head {
+        display: grid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Stundeneingabe Next Gen</h1>
+    <p>Lokaler Prototyp fuer Erfassung, Validierung und den ersten Pruef-Workflow.</p>
+  </header>
+
+  <main>
+    <div class="grid">
+      <section>
+        <h2>Mitarbeiter-Erfassung</h2>
+        <p>Ein Tageszettel kann als Entwurf gespeichert oder direkt eingereicht werden.</p>
+
+        <form id="dayForm">
+          <div class="row">
+            <label>Datum
+              <input name="workDate" type="date" required />
+            </label>
+            <label>Mitarbeiterkuerzel
+              <input name="employeeCode" value="NW" autocomplete="off" required />
+            </label>
+            <label>Pause Minuten
+              <input name="breakMinutes" value="45" inputmode="numeric" />
+            </label>
+          </div>
+
+          <div class="row">
+            <label>Anfang
+              <input name="startTime" type="time" value="07:00" />
+            </label>
+            <label>Ende
+              <input name="endTime" type="time" value="16:00" />
+            </label>
+            <label>Nach Aufwand
+              <select name="isByEffort">
+                <option value="">Nein</option>
+                <option value="1">Ja</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="entry-row">
+            <label>Kunde
+              <input name="customerName" value="RS" />
+            </label>
+            <label>Vorgang
+              <input name="projectNumber" value="26VG0001" />
+            </label>
+            <label>Kostenstelle
+              <input name="costCenter" value="IWS" maxlength="3" />
+            </label>
+            <label>Stunden
+              <input name="hours" value="8,25" inputmode="decimal" />
+            </label>
+          </div>
+
+          <label>Taetigkeit
+            <textarea name="activity">Prototyp testen</textarea>
+          </label>
+
+          <div class="toolbar">
+            <button type="submit" data-save-status="draft">Entwurf speichern</button>
+            <button type="submit" data-save-status="submitted">Einreichen</button>
+            <button class="secondary" type="button" id="reloadDays">Listen laden</button>
+          </div>
+          <div id="formStatus" class="status"></div>
+        </form>
+      </section>
+
+      <section>
+        <h2>API-Konfiguration</h2>
+        <p id="healthText">Lade Healthcheck...</p>
+        <div id="statusList" class="pill-list"></div>
+      </section>
+    </div>
+
+    <section>
+      <h2>Buero- und Pruefansicht</h2>
+      <p>Lokale Arbeitsliste nach dem bisherigen Viewer-Workflow.</p>
+      <div id="tabs" class="tabs"></div>
+      <div id="days" class="days"></div>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById("dayForm");
+    const formStatus = document.getElementById("formStatus");
+    const daysNode = document.getElementById("days");
+    const statusList = document.getElementById("statusList");
+    const healthText = document.getElementById("healthText");
+    const tabsNode = document.getElementById("tabs");
+
+    const views = [
+      { id: "all", label: "Total", statuses: [] },
+      { id: "submitted", label: "Zuweiser", statuses: ["submitted"] },
+      { id: "assigned", label: "Pruefung", statuses: ["assigned"] },
+      { id: "change_requested", label: "Aenderung", statuses: ["change_requested"] },
+      { id: "approved", label: "Rike/Buero", statuses: ["approved"] },
+      { id: "office_entered", label: "Eingegeben", statuses: ["office_entered"] },
+      { id: "done", label: "Fertig", statuses: ["done"] },
+      { id: "draft", label: "Entwuerfe", statuses: ["draft"] }
+    ];
+
+    let appConfig = { statusLabels: {}, reviewers: [] };
+    let activeView = "all";
+    let lastSaveStatus = "draft";
+
+    form.workDate.value = new Date().toISOString().slice(0, 10);
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function labelStatus(status) {
+      return appConfig.statusLabels[status] || status || "-";
+    }
+
+    async function loadConfig() {
+      const [healthResponse, configResponse] = await Promise.all([
+        fetch("/api/health"),
+        fetch("/api/config")
+      ]);
+      const health = await healthResponse.json();
+      appConfig = await configResponse.json();
+      healthText.textContent = `${health.service}: ok, Speicher ${appConfig.storage}`;
+      statusList.innerHTML = [...appConfig.roles, ...appConfig.statuses]
+        .map((item) => `<span class="pill">${escapeHtml(item)}</span>`)
+        .join("");
+      renderTabs();
+    }
+
+    function renderTabs() {
+      tabsNode.innerHTML = views
+        .map((view) => `<button type="button" class="tab ${view.id === activeView ? "active" : ""}" data-view="${view.id}">${escapeHtml(view.label)}</button>`)
+        .join("");
+    }
+
+    function visibleDays(days) {
+      const view = views.find((item) => item.id === activeView) || views[0];
+      if (!view.statuses.length) return days;
+      return days.filter((day) => view.statuses.includes(day.status));
+    }
+
+    function actionButtons(day) {
+      const reviewerButtons = (appConfig.reviewers || [])
+        .map((reviewer) => `<button type="button" class="secondary" data-action="assign" data-reviewer="${escapeHtml(reviewer.id)}" data-day-id="${escapeHtml(day.id)}">An ${escapeHtml(reviewer.label)}</button>`)
+        .join("");
+
+      if (day.status === "draft" || day.status === "change_requested") {
+        return `<button type="button" data-action="submit" data-day-id="${escapeHtml(day.id)}">Einreichen</button>`;
+      }
+      if (day.status === "submitted") {
+        return reviewerButtons || "<span class=\"event\">Keine Pruefer konfiguriert.</span>";
+      }
+      if (day.status === "assigned") {
+        return `
+          <button type="button" class="ok" data-action="approve" data-day-id="${escapeHtml(day.id)}">Freigeben</button>
+          <button type="button" class="warning" data-action="request_change" data-day-id="${escapeHtml(day.id)}">Aenderung anfordern</button>
+          <button type="button" class="secondary" data-action="back_to_assigner" data-day-id="${escapeHtml(day.id)}">Zurueck an Zuweiser</button>
+        `;
+      }
+      if (day.status === "approved") {
+        return `
+          <button type="button" class="ok" data-action="office_entered" data-day-id="${escapeHtml(day.id)}">Rike/Buero eingegeben</button>
+          <button type="button" class="secondary" data-action="back_to_assigner" data-day-id="${escapeHtml(day.id)}">Zurueck an Zuweiser</button>
+        `;
+      }
+      if (day.status === "office_entered") {
+        return `<button type="button" class="ok" data-action="done" data-day-id="${escapeHtml(day.id)}">Fertig</button>`;
+      }
+      if (day.status === "done") {
+        return `<button type="button" class="secondary" data-action="back_to_office" data-day-id="${escapeHtml(day.id)}">Zurueck an Rike/Buero</button>`;
+      }
+      return "";
+    }
+
+    function renderDay(day) {
+      const entries = Array.isArray(day.entries) ? day.entries : [];
+      const latestEvent = Array.isArray(day.workflowEvents) && day.workflowEvents.length
+        ? day.workflowEvents[day.workflowEvents.length - 1]
+        : null;
+      const assigned = day.assignedTo ? ` - Pruefer: ${day.assignedTo}` : "";
+      return `
+        <article class="day">
+          <div class="day-head">
+            <div>
+              <strong>${escapeHtml(day.workDate)} - ${escapeHtml(day.employeeCode)} - ${escapeHtml(String(day.totalHours ?? 0))} h</strong>
+              <span>${escapeHtml(day.startTime || "-")} bis ${escapeHtml(day.endTime || "-")}, Pause ${escapeHtml(String(day.breakMinutes ?? 0))} min${escapeHtml(assigned)}</span>
+            </div>
+            <span class="badge ${escapeHtml(day.status)}">${escapeHtml(labelStatus(day.status))}</span>
+          </div>
+          <span>${entries.map((entry) => `${escapeHtml(entry.customerName || "-")} ${escapeHtml(entry.projectNumber || "-")} ${escapeHtml(entry.costCenter || "-")} ${escapeHtml(String(entry.hours))} h`).join(" | ")}</span>
+          <span>${entries.map((entry) => escapeHtml(entry.activity || "")).filter(Boolean).join(" | ")}</span>
+          ${latestEvent ? `<span class="event">Letzte Aktion: ${escapeHtml(latestEvent.action)} (${escapeHtml(latestEvent.fromStatus)} -> ${escapeHtml(latestEvent.toStatus)})</span>` : ""}
+          <div class="actions">${actionButtons(day)}</div>
+        </article>
+      `;
+    }
+
+    async function loadDays() {
+      const response = await fetch("/api/days");
+      const payload = await response.json();
+      const days = visibleDays(Array.isArray(payload.days) ? payload.days : []);
+      daysNode.innerHTML = days.length
+        ? days.map(renderDay).join("")
+        : "<div class=\"empty\">Keine Tage in dieser Ansicht.</div>";
+    }
+
+    async function runWorkflowAction(button) {
+      const dayId = button.dataset.dayId;
+      const action = button.dataset.action;
+      const reviewer = button.dataset.reviewer || "";
+      const response = await fetch(`/api/days/${encodeURIComponent(dayId)}/workflow`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, reviewer, actor: "lokaler Prototyp" })
+      });
+      const payload = await response.json();
+      if (!response.ok) {
+        formStatus.className = "status error";
+        formStatus.textContent = (payload.errors || [payload.error || "Workflow-Aktion fehlgeschlagen."]).join(" ");
+        return;
+      }
+      formStatus.className = "status";
+      formStatus.textContent = `Workflow aktualisiert: ${labelStatus(payload.day.status)}.`;
+      await loadDays();
+    }
+
+    form.addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-save-status]");
+      if (button) lastSaveStatus = button.dataset.saveStatus || "draft";
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      formStatus.className = "status";
+      formStatus.textContent = "Speichere...";
+      const data = Object.fromEntries(new FormData(form).entries());
+      const response = await fetch("/api/days", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          workDate: data.workDate,
+          employeeCode: data.employeeCode,
+          startTime: data.startTime,
+          endTime: data.endTime,
+          breakMinutes: data.breakMinutes,
+          status: lastSaveStatus,
+          entries: [{
+            customerName: data.customerName,
+            projectNumber: data.projectNumber,
+            costCenter: data.costCenter,
+            isByEffort: data.isByEffort === "1",
+            hours: data.hours,
+            activity: data.activity
+          }]
+        })
+      });
+      const payload = await response.json();
+      if (!response.ok) {
+        formStatus.className = "status error";
+        formStatus.textContent = (payload.errors || [payload.error || "Speichern fehlgeschlagen."]).join(" ");
+        return;
+      }
+      formStatus.textContent = lastSaveStatus === "submitted" ? "Tag eingereicht." : "Entwurf gespeichert.";
+      activeView = lastSaveStatus;
+      renderTabs();
+      await loadDays();
+    });
+
+    tabsNode.addEventListener("click", async (event) => {
+      const button = event.target.closest("button[data-view]");
+      if (!button) return;
+      activeView = button.dataset.view || "all";
+      renderTabs();
+      await loadDays();
+    });
+
+    daysNode.addEventListener("click", async (event) => {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+      await runWorkflowAction(button);
+    });
+
+    document.getElementById("reloadDays").addEventListener("click", loadDays);
+    loadConfig().catch(() => { healthText.textContent = "API nicht erreichbar."; });
+    loadDays();
+  </script>
+</body>
+</html>

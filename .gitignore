@@ -1,0 +1,14 @@
+.env
+__pycache__/
+*.py[cod]
+.pytest_cache/
+pytest-cache-files-*/
+tests/_tmp_state/
+tests/_tmp_state*/
+data/*.json
+data/*.tmp
+*.log
+*.eml
+*.msg
+*.xlsx
+!data/.gitkeep
