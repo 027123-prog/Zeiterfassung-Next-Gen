@@ -37,6 +37,7 @@ Die aktuelle Stundeneingabe laeuft als `Stundeneingabe First Try` und bleibt bis
 - GitHub-Repository: `027123-prog/Zeiterfassung-Next-Gen`.
 - `main` ist der gemeinsame Arbeitsstand fuer die erste Projektgrundlage.
 - Es gibt noch kein Produktiv-Deployment und keine echte Supabase-Migration.
+- `legacy-reference/first-try` enthaelt bewusst kopierte Referenzdateien aus First Try fuer Analyse und Abgleich.
 
 ## Ziel
 

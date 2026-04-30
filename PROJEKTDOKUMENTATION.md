@@ -102,7 +102,7 @@ Nils moechte die bisherige Stundeneingabe als getrenntes neues Online-System nac
 - GitHub-Repository anlegen und Issues als Arbeitszentrale nutzen.
 - Login/Rollen ausbauen.
 - Mitarbeiter- und Buero-/Pruefansicht fachlich ausbauen.
-- Kostenstellen- und Vorlagenimport aus CSV/Excel bewusst planen.
+- Kostenstellen- und Vorlagenimport aus CSV bewusst planen.
 
 ## 2026-04-30: Lokaler Workflow-Prototyp erweitert
 
@@ -162,3 +162,41 @@ Nils moechte am Wochenende mit anderen Agenten am Projekt weiterarbeiten. Dafuer
 ### Naechste Schritte
 
 - Erste GitHub-Issues mit Akzeptanzkriterien anlegen.
+
+## 2026-04-30: First-Try-Referenzdateien ins Repo gelegt
+
+### Was gemacht wurde
+
+Die wichtigsten First-Try-Dateien wurden als read-only Referenzkopien unter `legacy-reference/first-try` ins Next-Gen-Repository aufgenommen.
+
+Kopiert wurden:
+
+- `app-mobile/stunden_app_mobile.html`
+- `app-mobile/index.html`
+- `app-mobile/kostenstelle_vorlagen.csv`
+- `app-mobile/kostenstelle_auswahl_demo.html`
+- `app-mobile/app.js`
+- `app-mobile/styles.css`
+- `viewer/office_mail_viewer.html`
+
+### Warum
+
+Nils moechte, dass andere Agenten am Wochenende alle wichtigen Vorlagen und Originaloberflaechen direkt im GitHub-Projekt vorfinden. Damit muessen sie nicht zuerst auf lokale First-Try-Pfade zugreifen.
+
+### Wichtige Entscheidungen
+
+- Die Dateien sind Referenzkopien und werden nicht als neue Produktivquelle behandelt.
+- Die alte Excel-Vorlage wird nicht ins Repo uebernommen; Vorlagen sollen in Next Gen spaeter direkt in der Admin-/Buero-Weboberflaeche gepflegt werden.
+- Echte Mail-Exporte, lokale Demo-Daten und Betriebsdaten bleiben ausgeschlossen.
+
+### Relevante Dateien
+
+- `legacy-reference/README.md`
+- `legacy-reference/first-try/app-mobile/`
+- `legacy-reference/first-try/viewer/`
+- `.gitignore`
+
+### Naechste Schritte
+
+- Andere Agenten koennen die Legacy-Dateien gegen die neue Architektur abgleichen.
+- Bei Uebernahmen immer in Next-Gen-Code neu integrieren und dokumentieren.

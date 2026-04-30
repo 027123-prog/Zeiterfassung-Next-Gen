@@ -10,6 +10,7 @@
 - [x] Minimalen lokalen Prototyp mit Healthcheck/API-Grundstruktur anlegen.
 - [x] Lokalen Workflow-Prototyp fuer Zuweisung, Pruefung, Rike/Buero und Fertig anlegen.
 - [x] GitHub-Repository fuer Wochenend-Arbeit vorbereiten: `027123-prog/Zeiterfassung-Next-Gen`.
+- [x] First-Try-Eingabe, Viewer und CSV-Vorlagendatei als Referenzkopien ins Repo legen.
 - [ ] Fachlichen Soll-Ablauf mit Nils klaeren.
 - [ ] Hosting-Ziel festlegen.
 
@@ -24,6 +25,7 @@
 - [ ] Mitarbeiter-Frontend aus Prototyp zu echter Erfassung ausbauen.
 - [x] Erste Buero-/Pruefansicht als lokale Arbeitsliste anlegen.
 - [ ] Kostenstellenkatalog und Vorlagen importierbar machen.
+- [ ] Admin-/Buero-Oberflaeche fuer Kostenstellen- und Vorlagenpflege entwerfen.
 - [ ] Importstrategie fuer First-Try-Mails entscheiden.
 - [x] Tests fuer Validierungen und lokale Workflow-Aktionen erweitern.
 

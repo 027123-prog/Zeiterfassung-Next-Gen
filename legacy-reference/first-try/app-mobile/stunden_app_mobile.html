@@ -1,0 +1,2884 @@
+﻿<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Stundenerfassung Mobil</title>
+  <style>
+    :root {
+      --panel: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #d7e0ec;
+      --accent: #4f9a93;
+      --accent-2: #6d8fd6;
+      --danger: #d16a6a;
+      --radius: 14px;
+      --ok-bg: #ecfdf3;
+      --ok-fg: #166534;
+      --warn-bg: #fff7ed;
+      --warn-fg: #9a3412;
+      --over-bg: #fef2f2;
+      --over-fg: #991b1b;
+      --neutral-bg: #f8fafc;
+      --neutral-fg: #334155;
+      --fb: #e6f4ea;
+      --ba: #e8f0fe;
+      --ia: #fff7e6;
+      --da: #f2dfcc;
+      --picker-neutral: #f3f4f6;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: linear-gradient(170deg, #e7effa, #f8fbff 45%, #e9fbfb);
+      overflow-x: hidden;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 8px 6px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px;
+      box-shadow: 0 8px 22px rgba(2, 6, 23, 0.08);
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0 0 6px;
+      line-height: 1.2;
+    }
+
+    .app-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .version-chip {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #475569;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .muted {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .form-grid {
+      margin-top: 6px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .span-2 {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: grid;
+      gap: 3px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #334155;
+      min-width: 0;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 9px;
+      font: inherit;
+      color: var(--text);
+      background: #fff;
+    }
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      min-height: 18px;
+      padding: 0;
+      margin: 0;
+      accent-color: var(--accent);
+    }
+
+    .inline-check {
+      min-height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 9px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      background: #fff;
+    }
+
+    .project-code-wrap {
+      display: grid;
+      grid-template-columns: 64px auto 84px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .project-code-wrap input {
+      text-align: center;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .cost-center-wrap {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .cost-center-wrap input {
+      text-transform: uppercase;
+    }
+
+    .cost-center-pick-btn {
+      min-height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      color: #1e293b;
+      padding: 7px 10px;
+      font: inherit;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .cost-center-pick-btn:hover {
+      background: #f8fafc;
+    }
+
+    .project-year-btn {
+      min-height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+      padding: 7px 9px;
+      text-align: center;
+      font: inherit;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+    }
+
+    .project-year-btn:hover {
+      background: #f8fafc;
+    }
+
+    #projectSuffix::placeholder,
+    #editProjectSuffix::placeholder {
+      font-style: italic;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .project-code-static {
+      min-height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #eef2f7;
+      color: #64748b;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    #employeeCode,
+    #editEmployeeCode {
+      text-transform: uppercase;
+    }
+
+    textarea {
+      resize: none;
+      line-height: 1.35;
+      min-height: 42px;
+      overflow: hidden;
+    }
+
+    .actions {
+      margin-top: 6px;
+      display: grid;
+      gap: 6px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .template-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .template-btn {
+      min-height: 32px;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: #f8fafc;
+      color: #1e293b;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .template-btn:hover {
+      background: #eef2f7;
+    }
+
+    button {
+      min-height: 38px;
+      border: 0;
+      border-radius: 8px;
+      font: inherit;
+      font-weight: 700;
+      color: #fff;
+      background: var(--accent);
+      cursor: pointer;
+      padding: 7px 9px;
+    }
+
+    button.secondary {
+      background: var(--accent-2);
+    }
+
+    button.danger {
+      background: var(--danger);
+    }
+
+    button.full {
+      grid-column: 1 / -1;
+    }
+
+    #saveEntry {
+      transition: transform 140ms ease, box-shadow 140ms ease, background-color 140ms ease, filter 140ms ease;
+    }
+
+    .save-feedback-ok {
+      animation: savePop 700ms cubic-bezier(0.22, 1, 0.36, 1);
+      background: #1f9d61 !important;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25), 0 10px 22px rgba(21, 128, 61, 0.35);
+      filter: saturate(1.08);
+    }
+
+    @keyframes savePop {
+      0% {
+        transform: scale(1);
+      }
+      20% {
+        transform: scale(0.95);
+      }
+      48% {
+        transform: scale(1.06);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .summary {
+      margin-top: 2px;
+      font-size: 14px;
+    }
+
+    .time-strip {
+      margin-top: 2px;
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      border-radius: 8px;
+      padding: 6px;
+    }
+
+    .time-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .time-grid-3 label {
+      font-size: 11px;
+      gap: 2px;
+    }
+
+    .hour-check {
+      margin-top: 6px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      padding: 7px 8px;
+      display: grid;
+      gap: 2px;
+      font-size: 12px;
+    }
+
+    .hour-check strong {
+      font-size: 13px;
+    }
+
+    .hour-check.neutral {
+      background: var(--neutral-bg);
+      color: var(--neutral-fg);
+    }
+
+    .hour-check.ok {
+      background: var(--ok-bg);
+      color: var(--ok-fg);
+      border-color: #86efac;
+    }
+
+    .hour-check.warn {
+      background: var(--warn-bg);
+      color: var(--warn-fg);
+      border-color: #fdba74;
+    }
+
+    .hour-check.over {
+      background: var(--over-bg);
+      color: var(--over-fg);
+      border-color: #fca5a5;
+    }
+
+    .entry-list {
+      margin-top: 6px;
+      display: grid;
+      gap: 5px;
+    }
+
+    .empty {
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 9px;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      background: #fbfdff;
+    }
+
+    .entry-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 7px;
+      background: #fcfdff;
+      display: grid;
+      gap: 4px;
+    }
+
+    .entry-meta {
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .entry-main {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .entry-hours {
+      font-weight: 800;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .entry-activity {
+      font-size: 13px;
+      word-break: break-word;
+    }
+
+    .entry-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .entry-edit,
+    .entry-delete {
+      min-height: 26px;
+      padding: 3px 6px;
+      font-size: 11px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    .entry-edit {
+      background: var(--accent-2);
+    }
+
+    .dialog-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.45);
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      z-index: 20;
+    }
+
+    .dialog-backdrop[hidden] {
+      display: none;
+    }
+
+    .dialog {
+      width: min(100%, 360px);
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 14px;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.22);
+    }
+
+    .dialog-actions {
+      margin-top: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .dialog button {
+      min-height: 42px;
+    }
+
+    .dialog .ghost {
+      background: #fff;
+      color: #1e293b;
+      border: 1px solid var(--border);
+    }
+
+    .dialog button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .export-dialog {
+      width: min(100%, 640px);
+    }
+
+    .export-scope {
+      grid-template-columns: 1fr 1fr;
+      margin-top: 6px;
+      margin-bottom: 4px;
+    }
+
+    .export-scope button.active-scope {
+      outline: 2px solid #0ea5e9;
+      outline-offset: 1px;
+    }
+
+    .export-label {
+      display: block;
+      margin-top: 4px;
+    }
+
+    .export-output {
+      width: 100%;
+      min-height: 150px;
+      margin-top: 4px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12px;
+      white-space: pre;
+      line-height: 1.3;
+    }
+
+    .export-meta {
+      margin-top: 6px;
+    }
+
+    .edit-dialog {
+      width: min(100%, 560px);
+      max-height: 86vh;
+      overflow: auto;
+    }
+
+    .edit-dialog .edit-day-fields {
+      display: none !important;
+    }
+
+    .year-picker-dialog {
+      width: min(100%, 320px);
+    }
+
+    .year-picker-options {
+      margin-top: 8px;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .year-option {
+      min-height: 40px;
+      background: #eef2f7;
+      color: #1e293b;
+      border: 1px solid var(--border);
+    }
+
+    .year-option.active-year {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .cost-picker-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.42);
+      z-index: 30;
+    }
+
+    .cost-picker-backdrop[hidden] {
+      display: none;
+    }
+
+    .cost-picker-sheet {
+      height: 100dvh;
+      background: #fff;
+      display: grid;
+      grid-template-rows: auto auto auto;
+      align-content: start;
+      gap: 6px;
+      padding: 8px;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .cost-picker-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cost-picker-head h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .cost-picker-close {
+      min-height: 28px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #1e293b;
+      border-radius: 8px;
+      padding: 2px 8px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .cost-picker-groups {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 4px;
+    }
+
+    .cost-picker-section {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px;
+      display: grid;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .cost-picker-section h4 {
+      margin: 0;
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    .cost-picker-section.fb { background: var(--fb); }
+    .cost-picker-section.ba { background: var(--ba); }
+    .cost-picker-section.ia { background: var(--ia); }
+    .cost-picker-section.da { background: var(--da); }
+    .cost-picker-section.other { background: var(--picker-neutral); }
+
+    .cost-picker-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3px;
+    }
+
+    .cost-picker-section.other .cost-picker-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 4px;
+    }
+
+    .cost-picker-subgroup {
+      display: grid;
+      gap: 4px;
+      margin-top: 4px;
+      padding-top: 4px;
+      border-top: 1px dashed rgba(15, 23, 42, 0.2);
+    }
+
+    .cost-picker-subgroup h5 {
+      margin: 0;
+      font-size: 11px;
+      line-height: 1.2;
+      color: #334155;
+    }
+
+    .cost-picker-grid-horizontal {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 4px;
+    }
+
+    .cost-picker-item {
+      border: 1px solid rgba(15, 23, 42, 0.18);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.84);
+      padding: 4px;
+      display: grid;
+      gap: 1px;
+      text-align: left;
+      cursor: pointer;
+      min-width: 0;
+      color: var(--text);
+    }
+
+    .cost-picker-item small {
+      color: #334155;
+      font-size: 9px;
+      line-height: 1.05;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cost-picker-code {
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      font-size: 12px;
+      color: #0b3a74;
+    }
+
+    @media (min-width: 880px) {
+      .app {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="panel">
+      <h1 class="app-title">Stundenerfassung <span id="appVersionBadge" class="version-chip"></span></h1>
+
+      <form id="entryForm">
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Datum
+              <input id="date" type="date" />
+            </label>
+
+            <label>Mitarbeiterkürzel
+              <input id="employeeCode" type="text" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" required />
+            </label>
+          </div>
+
+          <div class="time-strip">
+            <div class="time-grid-3">
+              <label>Anfangszeit
+                <input id="startTime" type="time" />
+              </label>
+              <label>Pause (Minuten)
+                <input id="breakMinutes" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="z. B. 45" value="0" />
+              </label>
+              <label>Endzeit
+                <input id="endTime" type="time" />
+              </label>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label>Kundenname
+              <input id="customerName" type="text" maxlength="80" />
+            </label>
+
+            <label>Vorgangsnr.
+              <div class="project-code-wrap">
+                <button id="projectYearButton" class="project-year-btn" type="button">26</button>
+                <span class="project-code-static">VG0</span>
+                <input id="projectSuffix" type="text" maxlength="3" inputmode="numeric" placeholder="z.B. 128" />
+              </div>
+              <input id="projectNumber" type="hidden" />
+            </label>
+          </div>
+
+          <div class="form-row">
+            <label>Kostenstelle
+              <div class="cost-center-wrap">
+                <input id="costCenter" type="text" maxlength="3" inputmode="text" autocapitalize="characters" spellcheck="false" placeholder="Code tippen (z. B. FWS)" />
+                <button id="pickCostCenterMain" type="button" class="cost-center-pick-btn">Auswahl</button>
+              </div>
+            </label>
+            <label>Nach Aufwand?
+              <span class="inline-check">
+                <input id="isByEffort" type="checkbox" />
+                <span>Ja</span>
+              </span>
+            </label>
+          </div>
+
+          <label>Tätigkeit
+            <textarea id="activity" rows="2" maxlength="500"></textarea>
+          </label>
+
+          <label>Stunden (Komma/Punkt)
+            <input id="hours" type="text" inputmode="decimal" placeholder="z. B. 1,5 oder 1.5" />
+          </label>
+        </div>
+
+        <div class="actions">
+          <button id="saveEntry" type="submit">Eintrag speichern</button>
+          <button type="button" class="secondary" id="sendMail">E-Mail senden</button>
+          <button type="button" class="danger full" id="clearAll">Alle löschen</button>
+        </div>
+        <p id="formMessage" class="muted" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Einträge</h2>
+      <p class="muted" id="viewInfo">Angezeigter Tag: -</p>
+      <p class="summary">Gesamtstunden (Tag): <strong id="totalHours">0.00</strong></p>
+      <div id="hourCheck" class="hour-check neutral">
+        <strong id="hourCheckTitle">Stundenprüfung optional</strong>
+        <span id="hourCheckText">Für Soll-Ist-Abgleich Anfangszeit und Endzeit setzen.</span>
+      </div>
+      <div id="entryList" class="entry-list"></div>
+    </section>
+  </main>
+
+  <div id="exportDialog" class="dialog-backdrop" hidden>
+    <div class="dialog export-dialog">
+      <h3>Büro-Export</h3>
+      <p class="muted">Zeitraum wählen, dann Inhalt kopieren oder per Mail öffnen.</p>
+      <div class="dialog-actions export-scope">
+        <button id="exportDay" type="button">Tag</button>
+        <button id="exportWeek" type="button" class="secondary">Woche</button>
+      </div>
+      <label class="muted export-label">Exportinhalt (TSV, WaWi-freundlich)</label>
+      <textarea id="exportOutput" class="export-output" rows="9" readonly></textarea>
+      <p id="exportMeta" class="muted export-meta">Noch kein Export erzeugt.</p>
+      <div class="dialog-actions">
+        <button id="copyExport" type="button">Inhalt kopieren</button>
+        <button id="mailExport" type="button" class="secondary">E-Mail öffnen</button>
+        <button id="exportCancel" type="button" class="ghost">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="editDialog" class="dialog-backdrop" hidden>
+    <div class="dialog edit-dialog">
+      <h3>Eintrag bearbeiten</h3>
+      <p class="muted">Änderungen speichern oder Eintrag löschen.</p>
+      <div class="form-grid">
+        <div class="form-row edit-day-fields">
+          <label>Datum
+            <input id="editDate" type="date" />
+          </label>
+          <label>Mitarbeiterkürzel
+            <input id="editEmployeeCode" type="text" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+          </label>
+        </div>
+        <div class="form-row edit-day-fields">
+          <label>Anfangszeit
+            <input id="editStartTime" type="time" />
+          </label>
+          <label>Endzeit
+            <input id="editEndTime" type="time" />
+          </label>
+        </div>
+        <div class="form-row">
+          <label class="edit-day-fields">Pause (Minuten)
+            <input id="editBreakMinutes" type="text" inputmode="decimal" />
+          </label>
+          <label>Stunden
+            <input id="editHours" type="text" inputmode="decimal" />
+          </label>
+        </div>
+        <div class="form-row">
+          <label>Kundenname
+            <input id="editCustomerName" type="text" maxlength="80" />
+          </label>
+          <label>Vorgangsnr.
+            <div class="project-code-wrap">
+              <button id="editProjectYearButton" class="project-year-btn" type="button">26</button>
+              <span class="project-code-static">VG0</span>
+              <input id="editProjectSuffix" type="text" maxlength="3" inputmode="numeric" placeholder="z.B. 128" />
+            </div>
+            <input id="editProjectNumber" type="hidden" />
+          </label>
+        </div>
+        <div class="form-row">
+          <label>Kostenstelle
+            <div class="cost-center-wrap">
+              <input id="editCostCenter" type="text" maxlength="3" inputmode="text" autocapitalize="characters" spellcheck="false" placeholder="Code tippen (z. B. FWS)" />
+              <button id="pickCostCenterEdit" type="button" class="cost-center-pick-btn">Auswahl</button>
+            </div>
+          </label>
+          <label>Nach Aufwand?
+            <span class="inline-check">
+              <input id="editIsByEffort" type="checkbox" />
+              <span>Ja</span>
+            </span>
+          </label>
+        </div>
+        <label>Tätigkeit
+          <textarea id="editActivity" rows="2" maxlength="500"></textarea>
+        </label>
+      </div>
+      <div class="dialog-actions">
+        <button id="editSave" type="button">Änderungen speichern</button>
+        <button id="editDelete" type="button" class="danger">Eintrag löschen</button>
+        <button id="editCancel" type="button" class="ghost">Abbrechen</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="yearPickerDialog" class="dialog-backdrop" hidden>
+    <div class="dialog year-picker-dialog">
+      <h3>Jahr wählen</h3>
+      <p class="muted">Wähle die zweistellige Jahreszahl.</p>
+      <div id="yearPickerOptions" class="year-picker-options"></div>
+      <div class="dialog-actions">
+        <button id="yearPickerCancel" type="button" class="ghost">Abbrechen</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="costPickerBackdrop" class="cost-picker-backdrop" hidden>
+    <div class="cost-picker-sheet">
+      <div class="cost-picker-head">
+        <h3>Kostenstelle wählen</h3>
+        <button id="closeCostPicker" class="cost-picker-close" type="button">Schließen</button>
+      </div>
+
+      <div class="cost-picker-groups">
+        <section class="cost-picker-section fb">
+          <h4>Fußboden</h4>
+          <div class="cost-picker-grid">
+            <button class="cost-picker-item" type="button" data-code="FAF" data-label="Fußboden Fahr/Lade"><small>Fahr/Lade</small><span class="cost-picker-code">FAF</span></button>
+            <button class="cost-picker-item" type="button" data-code="FMO" data-label="Fußboden Montage"><small>Montage</small><span class="cost-picker-code">FMO</span></button>
+            <button class="cost-picker-item" type="button" data-code="FWS" data-label="Fußboden Werkstatt"><small>Werkstatt</small><span class="cost-picker-code">FWS</span></button>
+          </div>
+        </section>
+
+        <section class="cost-picker-section ba">
+          <h4>Bauelemente</h4>
+          <div class="cost-picker-grid">
+            <button class="cost-picker-item" type="button" data-code="BAF" data-label="Bauelem. Fahr/Lade"><small>Fahr/Lade</small><span class="cost-picker-code">BAF</span></button>
+            <button class="cost-picker-item" type="button" data-code="BMO" data-label="Bauelem. Mont."><small>Montage</small><span class="cost-picker-code">BMO</span></button>
+            <button class="cost-picker-item" type="button" data-code="BWS" data-label="Bauelem. WS"><small>Werkstatt</small><span class="cost-picker-code">BWS</span></button>
+          </div>
+        </section>
+
+        <section class="cost-picker-section ia">
+          <h4>Innenausbau</h4>
+          <div class="cost-picker-grid">
+            <button class="cost-picker-item" type="button" data-code="IAF" data-label="Innenausbau Fahr/Lade"><small>Fahr/Lade</small><span class="cost-picker-code">IAF</span></button>
+            <button class="cost-picker-item" type="button" data-code="IMO" data-label="Innenausbau Mont."><small>Montage</small><span class="cost-picker-code">IMO</span></button>
+            <button class="cost-picker-item" type="button" data-code="IWS" data-label="Innenausbau WS"><small>Werkstatt</small><span class="cost-picker-code">IWS</span></button>
+          </div>
+        </section>
+
+        <section class="cost-picker-section da">
+          <h4>Dämmung/Lehm</h4>
+          <div class="cost-picker-grid">
+            <button class="cost-picker-item" type="button" data-code="DAF" data-label="Dämmung/Lehm Fahr/Lade"><small>Fahr/Lade</small><span class="cost-picker-code">DAF</span></button>
+            <button class="cost-picker-item" type="button" data-code="DMO" data-label="Dämmung/Lehm Mont."><small>Montage</small><span class="cost-picker-code">DMO</span></button>
+            <button class="cost-picker-item" type="button" data-code="DWS" data-label="Dämmung/Lehm WS"><small>Werkstatt</small><span class="cost-picker-code">DWS</span></button>
+          </div>
+        </section>
+
+      </div>
+
+      <section class="cost-picker-section other">
+        <h4>Weitere Kostenstellen</h4>
+        <div class="cost-picker-grid">
+          <button class="cost-picker-item" type="button" data-code="REK" data-label="Reklamation"><small>Reklamation</small><span class="cost-picker-code">REK</span></button>
+          <button class="cost-picker-item" type="button" data-code="WAR" data-label="Wartung"><small>Wartung</small><span class="cost-picker-code">WAR</span></button>
+          <button class="cost-picker-item" type="button" data-code="KRS" data-label="Innerbetriebliche Kleinaufträge"><small>Kleinaufträge</small><span class="cost-picker-code">KRS</span></button>
+          <button class="cost-picker-item" type="button" data-code="HRS" data-label="Arbeiten im Zusammenhang mit Handel"><small>Handel</small><span class="cost-picker-code">HRS</span></button>
+          <button class="cost-picker-item" type="button" data-code="SIU" data-label="Schulung im Untern."><small>Schulung</small><span class="cost-picker-code">SIU</span></button>
+          <button class="cost-picker-item" type="button" data-code="ORD" data-label="Ordnung"><small>Ordnung</small><span class="cost-picker-code">ORD</span></button>
+          <button class="cost-picker-item" type="button" data-code="KDB" data-label="Kosten der Beschaffung"><small>Beschaffung</small><span class="cost-picker-code">KDB</span></button>
+        </div>
+        <div class="cost-picker-subgroup">
+          <h5>Büro</h5>
+          <div class="cost-picker-grid-horizontal">
+            <button class="cost-picker-item" type="button" data-code="AVB" data-label="Arbeitsvorbereitung"><small>Arbeitsvorbereitung</small><span class="cost-picker-code">AVB</span></button>
+            <button class="cost-picker-item" type="button" data-code="CAD" data-label="Zeichnung"><small>Zeichnung</small><span class="cost-picker-code">CAD</span></button>
+            <button class="cost-picker-item" type="button" data-code="BST" data-label="Baustellentermin"><small>Baustellentermin</small><span class="cost-picker-code">BST</span></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="cost-picker-section other">
+        <h4>Vorlagen</h4>
+        <div id="templateButtons" class="template-buttons"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const APP_VERSION = "V1.6";
+    const EXPORT_ROW_END_MARKER = "#RS#";
+    const STORAGE_KEY = "time_entries_mail_v4";
+    const LEGACY_STORAGE_KEYS = ["time_entries_mail_v3", "time_entries_mail_v2", "time_entries_mail_v1", "time_entries_mail"];
+    const MAILTO_MAX_LENGTH = 1800;
+    const OFFICE_EMAIL = "info@roewekamp-stumpe.de";
+    const TEMPLATE_CSV_FILE = "./kostenstelle_vorlagen.csv";
+    // Hosted single-file fallback: templates are embedded here.
+    const DEFAULT_TEMPLATES = [
+      {
+        id: "tpl-inline-1",
+        label: "Schulung",
+        customerName: "",
+        projectPrefix: "",
+        projectSuffix: "",
+        costCenter: "SIU",
+        isByEffort: false,
+        activity: "Schulung:",
+        startTime: "",
+        endTime: "",
+        breakMinutes: "",
+        hours: ""
+      },
+      {
+        id: "tpl-inline-2",
+        label: "Werkstattbesprechung",
+        customerName: "",
+        projectPrefix: "",
+        projectSuffix: "",
+        costCenter: "SIU",
+        isByEffort: false,
+        activity: "Werkstattbesprechung",
+        startTime: "",
+        endTime: "",
+        breakMinutes: "",
+        hours: ""
+      },
+      {
+        id: "tpl-inline-3",
+        label: "Ordnung",
+        customerName: "",
+        projectPrefix: "",
+        projectSuffix: "",
+        costCenter: "ORD",
+        isByEffort: false,
+        activity: "Ordnung:",
+        startTime: "",
+        endTime: "",
+        breakMinutes: "",
+        hours: ""
+      },
+      {
+        id: "tpl-inline-4",
+        label: "Kleinauftrage",
+        customerName: "RS",
+        projectPrefix: "26",
+        projectSuffix: "016",
+        costCenter: "IWS",
+        isByEffort: false,
+        activity: "Kleinauftrag:",
+        startTime: "",
+        endTime: "",
+        breakMinutes: "",
+        hours: ""
+      },
+      {
+        id: "tpl-inline-5",
+        label: "Muster",
+        customerName: "RS",
+        projectPrefix: "26",
+        projectSuffix: "017",
+        costCenter: "IWS",
+        isByEffort: false,
+        activity: "Muster:",
+        startTime: "",
+        endTime: "",
+        breakMinutes: "",
+        hours: ""
+      },
+      {
+        id: "tpl-inline-6",
+        label: "Werkstatteinrichtung",
+        customerName: "RS",
+        projectPrefix: "26",
+        projectSuffix: "034",
+        costCenter: "IWS",
+        isByEffort: false,
+        activity: "Werkstatteinrichtung:",
+        startTime: "",
+        endTime: "",
+        breakMinutes: "",
+        hours: ""
+      },
+      {
+        id: "tpl-inline-7",
+        label: "Auro-Online",
+        customerName: "RS",
+        projectPrefix: "24",
+        projectSuffix: "322",
+        costCenter: "HAU",
+        isByEffort: false,
+        activity: "Auro Online",
+        startTime: "",
+        endTime: "",
+        breakMinutes: "",
+        hours: ""
+      }
+    ];
+
+    const form = document.getElementById("entryForm");
+    const saveEntryButton = document.getElementById("saveEntry");
+    const dateInput = document.getElementById("date");
+    const employeeCodeInput = document.getElementById("employeeCode");
+    const startTimeInput = document.getElementById("startTime");
+    const endTimeInput = document.getElementById("endTime");
+    const breakMinutesInput = document.getElementById("breakMinutes");
+    const hoursInput = document.getElementById("hours");
+    const customerNameInput = document.getElementById("customerName");
+    const costCenterInput = document.getElementById("costCenter");
+    const isByEffortInput = document.getElementById("isByEffort");
+    const templateButtons = document.getElementById("templateButtons");
+    const projectYearButton = document.getElementById("projectYearButton");
+    const projectSuffixInput = document.getElementById("projectSuffix");
+    const projectNumberInput = document.getElementById("projectNumber");
+    const activityInput = document.getElementById("activity");
+    const entryList = document.getElementById("entryList");
+    const totalHoursLabel = document.getElementById("totalHours");
+    const viewInfoLabel = document.getElementById("viewInfo");
+    const formMessage = document.getElementById("formMessage");
+    const hourCheck = document.getElementById("hourCheck");
+    const hourCheckTitle = document.getElementById("hourCheckTitle");
+    const hourCheckText = document.getElementById("hourCheckText");
+    const sendMailButton = document.getElementById("sendMail");
+    const clearAllButton = document.getElementById("clearAll");
+    const exportDialog = document.getElementById("exportDialog");
+    const exportDayButton = document.getElementById("exportDay");
+    const exportWeekButton = document.getElementById("exportWeek");
+    const exportOutput = document.getElementById("exportOutput");
+    const exportMeta = document.getElementById("exportMeta");
+    const copyExportButton = document.getElementById("copyExport");
+    const mailExportButton = document.getElementById("mailExport");
+    const exportCancelButton = document.getElementById("exportCancel");
+    const editDialog = document.getElementById("editDialog");
+    const editDateInput = document.getElementById("editDate");
+    const editEmployeeCodeInput = document.getElementById("editEmployeeCode");
+    const editStartTimeInput = document.getElementById("editStartTime");
+    const editEndTimeInput = document.getElementById("editEndTime");
+    const editBreakMinutesInput = document.getElementById("editBreakMinutes");
+    const editHoursInput = document.getElementById("editHours");
+    const editCustomerNameInput = document.getElementById("editCustomerName");
+    const editCostCenterInput = document.getElementById("editCostCenter");
+    const editIsByEffortInput = document.getElementById("editIsByEffort");
+    const editProjectYearButton = document.getElementById("editProjectYearButton");
+    const editProjectSuffixInput = document.getElementById("editProjectSuffix");
+    const editProjectNumberInput = document.getElementById("editProjectNumber");
+    const editActivityInput = document.getElementById("editActivity");
+    const editSaveButton = document.getElementById("editSave");
+    const editDeleteButton = document.getElementById("editDelete");
+    const editCancelButton = document.getElementById("editCancel");
+    const yearPickerDialog = document.getElementById("yearPickerDialog");
+    const yearPickerOptions = document.getElementById("yearPickerOptions");
+    const yearPickerCancelButton = document.getElementById("yearPickerCancel");
+    const costPickerBackdrop = document.getElementById("costPickerBackdrop");
+    const closeCostPickerButton = document.getElementById("closeCostPicker");
+    const pickCostCenterMainButton = document.getElementById("pickCostCenterMain");
+    const pickCostCenterEditButton = document.getElementById("pickCostCenterEdit");
+    const appVersionBadge = document.getElementById("appVersionBadge");
+
+    if (appVersionBadge) {
+      appVersionBadge.textContent = APP_VERSION;
+      document.title = `Stundenerfassung Mobil ${APP_VERSION}`;
+    }
+
+    let inMemoryEntries = [];
+    let localStorageEnabled = canUseLocalStorage();
+    let storageFallbackHintShown = false;
+    let editingEntryId = null;
+    let exportScope = "day";
+    let currentExportText = "";
+    let currentExportSubject = "";
+    let costPickerTargetInput = null;
+    let yearPickerTarget = "";
+    let templates = [...DEFAULT_TEMPLATES];
+    let saveFeedbackTimer = null;
+
+    dateInput.value = getLocalDateISO();
+
+    let entries = loadEntries();
+    const normalizedLoadedEntries = normalizeLoadedDaySharedFields(entries);
+    if (normalizedLoadedEntries.changed) {
+      entries = normalizedLoadedEntries.entries;
+      saveEntries();
+    }
+    hydrateInputsForDate();
+
+    function getLocalDateISO() {
+      const now = new Date();
+      const offset = now.getTimezoneOffset() * 60000;
+      return new Date(now.getTime() - offset).toISOString().slice(0, 10);
+    }
+
+    function canUseLocalStorage() {
+      try {
+        const testKey = "__time_tracker_test__";
+        localStorage.setItem(testKey, "1");
+        localStorage.removeItem(testKey);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    function loadEntries() {
+      if (localStorageEnabled) {
+        try {
+          const readArray = (key) => {
+            const raw = localStorage.getItem(key);
+            if (!raw) return [];
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? parsed : [];
+          };
+
+          const dedupeByIdentity = (items) => {
+            const list = Array.isArray(items) ? items : [];
+            const byKey = new Map();
+            list.forEach((entry, index) => {
+              if (!entry || typeof entry !== "object") return;
+              const id = String(entry.id || "").trim();
+              const key = id || [
+                normalizeEntryDateIso(entry.date),
+                sanitizeEmployeeCode(entry.employeeCode || ""),
+                String(entry.customerName || "").trim(),
+                String(entry.projectNumber || "").trim(),
+                sanitizeCostCenter(entry.costCenter || ""),
+                String(entry.hours || "").trim(),
+                String(entry.activity || "").trim(),
+                String(entry.startTime || "").trim(),
+                String(entry.endTime || "").trim(),
+                String(normalizeBreakMinutesValue(entry.breakMinutes ?? ""))
+              ].join("|");
+              const stamp = Number(entry.createdAt || 0);
+              const order = Number.isFinite(stamp) && stamp > 0 ? stamp : index;
+              const prev = byKey.get(key);
+              if (!prev || order >= prev.order) {
+                byKey.set(key, { order, entry });
+              }
+            });
+            return Array.from(byKey.values()).sort((a, b) => a.order - b.order).map((item) => item.entry);
+          };
+
+          const primaryEntries = readArray(STORAGE_KEY);
+          let merged = [...primaryEntries];
+          let legacyFound = false;
+          LEGACY_STORAGE_KEYS.forEach((legacyKey) => {
+            const legacyEntries = readArray(legacyKey);
+            if (legacyEntries.length > 0) {
+              legacyFound = true;
+              merged = merged.concat(legacyEntries);
+            }
+          });
+          const deduped = dedupeByIdentity(merged);
+
+          if (legacyFound && deduped.length !== primaryEntries.length) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(deduped));
+          }
+          return deduped;
+        } catch {
+          localStorageEnabled = false;
+        }
+      }
+      return [...inMemoryEntries];
+    }
+
+    function saveEntries() {
+      if (localStorageEnabled) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+          return;
+        } catch {
+          localStorageEnabled = false;
+        }
+      }
+
+      inMemoryEntries = [...entries];
+      if (!storageFallbackHintShown) {
+        storageFallbackHintShown = true;
+        setFormMessage("Hinweis: Speichern ist in dieser Ansicht eingeschränkt.", true);
+      }
+    }
+
+    function generateId() {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return window.crypto.randomUUID();
+      }
+      return `id-${Date.now()}-${Math.floor(Math.random() * 1e9)}`;
+    }
+
+    function fmtHours(value) {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return "";
+      return num.toFixed(2);
+    }
+
+    function setFormMessage(text, isError) {
+      formMessage.textContent = text || "";
+      formMessage.style.color = isError ? "#b91c1c" : "#64748b";
+    }
+
+    function triggerSaveFeedback() {
+      if (!saveEntryButton) return;
+      const defaultLabel = saveEntryButton.dataset.defaultLabel || saveEntryButton.textContent || "Eintrag speichern";
+      saveEntryButton.dataset.defaultLabel = defaultLabel;
+      if (saveFeedbackTimer) {
+        window.clearTimeout(saveFeedbackTimer);
+        saveFeedbackTimer = null;
+      }
+      saveEntryButton.textContent = "Gespeichert ✓";
+      saveEntryButton.classList.remove("save-feedback-ok");
+      void saveEntryButton.offsetWidth;
+      saveEntryButton.classList.add("save-feedback-ok");
+      saveFeedbackTimer = window.setTimeout(() => {
+        saveEntryButton.classList.remove("save-feedback-ok");
+        saveEntryButton.textContent = saveEntryButton.dataset.defaultLabel || "Eintrag speichern";
+        saveFeedbackTimer = null;
+      }, 850);
+    }
+
+    function parseDecimal(rawValue) {
+      const normalized = String(rawValue || "").trim().replace(",", ".");
+      if (!/^\d+(\.\d+)?$/.test(normalized)) return NaN;
+      return Number(normalized);
+    }
+
+    function parseBreakMinutes(rawValue) {
+      const text = String(rawValue || "").trim();
+      if (text === "") return 0;
+      if (!/^\d+$/.test(text)) return NaN;
+      return Number(text);
+    }
+
+    function isValidBreakMinutesText(text) {
+      return text === "" || /^\d+$/.test(text);
+    }
+
+    function normalizeBreakMinutesValue(value) {
+      const text = String(value ?? "").trim();
+      if (text === "") return 0;
+
+      const normalized = text.replace(",", ".");
+      const parsed = Number(normalized);
+      if (!Number.isFinite(parsed) || parsed < 0) return 0;
+      if (Number.isInteger(parsed)) return parsed;
+
+      // Legacy correction: old exports used decimal hours for break.
+      const asMinutesFromHours = parsed * 60;
+      if (parsed <= 2 && Math.abs(asMinutesFromHours - Math.round(asMinutesFromHours)) < 1e-6) {
+        return Math.round(asMinutesFromHours);
+      }
+
+      return Math.round(parsed);
+    }
+
+    function normalizeEntryDateIso(value) {
+      const raw = String(value ?? "").trim();
+      if (!raw) return "";
+
+      const isoMatch = raw.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);
+      if (isoMatch) {
+        const year = isoMatch[1];
+        const month = isoMatch[2].padStart(2, "0");
+        const day = isoMatch[3].padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+
+      const deMatch = raw.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$/);
+      if (deMatch) {
+        const day = deMatch[1].padStart(2, "0");
+        const month = deMatch[2].padStart(2, "0");
+        const year = deMatch[3];
+        return `${year}-${month}-${day}`;
+      }
+
+      return raw;
+    }
+
+    function buildDayEntryGroupKey(entry) {
+      const date = String((entry && entry.date) || "").trim();
+      const employeeCode = sanitizeEmployeeCode((entry && entry.employeeCode) || "");
+      return `${date}|${employeeCode || "_"}`;
+    }
+
+    function normalizeLoadedDaySharedFields(sourceEntries) {
+      const list = Array.isArray(sourceEntries) ? sourceEntries : [];
+      let changed = false;
+      const prepared = list.map((entry) => {
+        if (!entry || typeof entry !== "object") return entry;
+        const normalizedDate = normalizeEntryDateIso(entry.date);
+        if (String(entry.date || "") !== normalizedDate) changed = true;
+        return { ...entry, date: normalizedDate };
+      });
+      const latestByGroup = new Map();
+      prepared.forEach((entry, index) => {
+        const key = buildDayEntryGroupKey(entry);
+        const stamp = Number(entry && entry.createdAt);
+        const order = Number.isFinite(stamp) ? stamp : index;
+        const prev = latestByGroup.get(key);
+        if (!prev || order >= prev.order) {
+          latestByGroup.set(key, {
+            order,
+            startTime: String((entry && entry.startTime) || ""),
+            endTime: String((entry && entry.endTime) || ""),
+            breakMinutes: normalizeBreakMinutesValue(entry && entry.breakMinutes)
+          });
+        }
+      });
+
+      const normalized = prepared.map((entry) => {
+        const key = buildDayEntryGroupKey(entry);
+        const shared = latestByGroup.get(key);
+        if (!shared) return entry;
+        const currentStart = String((entry && entry.startTime) || "");
+        const currentEnd = String((entry && entry.endTime) || "");
+        const currentBreak = normalizeBreakMinutesValue(entry && entry.breakMinutes);
+        const rawBreak = String((entry && entry.breakMinutes) ?? "").trim();
+        const canonicalBreak = String(shared.breakMinutes);
+        if (
+          currentStart === shared.startTime
+          && currentEnd === shared.endTime
+          && currentBreak === shared.breakMinutes
+          && rawBreak === canonicalBreak
+        ) {
+          return entry;
+        }
+        changed = true;
+        return {
+          ...entry,
+          startTime: shared.startTime,
+          endTime: shared.endTime,
+          breakMinutes: shared.breakMinutes
+        };
+      });
+
+      return { entries: normalized, changed };
+    }
+
+    function synchronizeDaySharedFields(baseEntry) {
+      const groupKey = buildDayEntryGroupKey(baseEntry);
+      const sharedStart = String((baseEntry && baseEntry.startTime) || "");
+      const sharedEnd = String((baseEntry && baseEntry.endTime) || "");
+      const sharedBreak = normalizeBreakMinutesValue(baseEntry && baseEntry.breakMinutes);
+      entries = entries.map((entry) => {
+        if (buildDayEntryGroupKey(entry) !== groupKey) return entry;
+        const currentStart = String((entry && entry.startTime) || "");
+        const currentEnd = String((entry && entry.endTime) || "");
+        const currentBreak = normalizeBreakMinutesValue(entry && entry.breakMinutes);
+        const rawBreak = String((entry && entry.breakMinutes) ?? "").trim();
+        const canonicalBreak = String(sharedBreak);
+        if (
+          currentStart === sharedStart
+          && currentEnd === sharedEnd
+          && currentBreak === sharedBreak
+          && rawBreak === canonicalBreak
+        ) {
+          return entry;
+        }
+        return {
+          ...entry,
+          startTime: sharedStart,
+          endTime: sharedEnd,
+          breakMinutes: sharedBreak
+        };
+      });
+    }
+
+    function sanitizeEmployeeCode(rawValue) {
+      return String(rawValue || "")
+        .toUpperCase()
+        .replace(/[^A-ZÄÖÜ]/g, "");
+    }
+
+    function sanitizeCostCenter(rawValue) {
+      return String(rawValue || "")
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, "")
+        .slice(0, 3);
+    }
+
+    function getYearTwoFromIso(dateIso) {
+      const match = String(dateIso || "").match(/^(\d{4})-\d{2}-\d{2}$/);
+      if (match) return match[1].slice(2);
+      return String(new Date().getFullYear()).slice(-2);
+    }
+
+    function getProjectPrefix(dateIso) {
+      return `${getYearTwoFromIso(dateIso)}VG0`;
+    }
+
+    function normalizeProjectNumber(rawValue, dateIso) {
+      const raw = String(rawValue || "").toUpperCase().replace(/\s+/g, "");
+      if (!raw) return "";
+
+      const exact = raw.match(/^(\d{2})VG0(\d{1,3})$/);
+      if (exact) return `${exact[1]}VG0${exact[2].padStart(3, "0")}`;
+
+      const suffixOnly = raw.match(/^(\d{1,3})$/);
+      if (suffixOnly) return `${getProjectPrefix(dateIso)}${suffixOnly[1].padStart(3, "0")}`;
+
+      const digits = raw.replace(/\D/g, "");
+      if (digits.length >= 5) {
+        const yearTwo = digits.slice(0, 2);
+        const suffixThree = digits.slice(-3);
+        return `${yearTwo}VG0${suffixThree}`;
+      }
+
+      return raw;
+    }
+
+    function isValidProjectNumber(value) {
+      return /^\d{2}VG0\d{3}$/.test(String(value || "").toUpperCase().trim());
+    }
+
+    function sanitizeDigits(rawValue, maxLength) {
+      const digits = String(rawValue || "").replace(/\D/g, "");
+      return typeof maxLength === "number" ? digits.slice(0, maxLength) : digits;
+    }
+
+    function splitProjectNumber(rawValue, dateIso) {
+      const normalized = normalizeProjectNumber(rawValue, dateIso);
+      const match = normalized.match(/^(\d{2})VG0(\d{3})$/);
+      if (match) {
+        return { year: match[1], suffix: match[2] };
+      }
+      return { year: getYearTwoFromIso(dateIso), suffix: "" };
+    }
+
+    function normalizeOptionalProjectNumber(rawValue, dateIso) {
+      const normalized = normalizeProjectNumber(rawValue, dateIso);
+      if (/^\d{2}VG0$/i.test(String(normalized || "").trim())) return "";
+      return normalized;
+    }
+
+    function normalizeYearTwo(rawValue, dateIso) {
+      const year = sanitizeDigits(rawValue, 2);
+      return year || getYearTwoFromIso(dateIso);
+    }
+
+    function setYearButtonValue(button, rawYear, dateIso) {
+      const year = normalizeYearTwo(rawYear, dateIso);
+      button.dataset.year = year;
+      button.textContent = year;
+    }
+
+    function getYearButtonValue(button, dateIso) {
+      return normalizeYearTwo(button.dataset.year || button.textContent || "", dateIso);
+    }
+
+    function buildProjectNumberFromParts(yearPart, suffixPart, dateIso) {
+      const year = normalizeYearTwo(yearPart, dateIso);
+      const suffix = sanitizeDigits(suffixPart, 3);
+      if (!suffix) return `${year}VG0`;
+      return `${year}VG0${suffix.padStart(3, "0")}`;
+    }
+
+    function syncMainProjectNumber() {
+      projectSuffixInput.value = sanitizeDigits(projectSuffixInput.value, 3);
+      const year = getYearButtonValue(projectYearButton, dateInput.value);
+      setYearButtonValue(projectYearButton, year, dateInput.value);
+      projectNumberInput.value = buildProjectNumberFromParts(
+        year,
+        projectSuffixInput.value,
+        dateInput.value
+      );
+    }
+
+    function syncEditProjectNumber() {
+      editProjectSuffixInput.value = sanitizeDigits(editProjectSuffixInput.value, 3);
+      const dateForEdit = editDateInput.value || dateInput.value;
+      const year = getYearButtonValue(editProjectYearButton, dateForEdit);
+      setYearButtonValue(editProjectYearButton, year, dateForEdit);
+      editProjectNumberInput.value = buildProjectNumberFromParts(
+        year,
+        editProjectSuffixInput.value,
+        dateForEdit
+      );
+    }
+
+    function setMainProjectParts(rawValue, dateIso) {
+      const parts = splitProjectNumber(rawValue, dateIso);
+      setYearButtonValue(projectYearButton, parts.year, dateIso);
+      projectSuffixInput.value = parts.suffix;
+      syncMainProjectNumber();
+    }
+
+    function setEditProjectParts(rawValue, dateIso) {
+      const parts = splitProjectNumber(rawValue, dateIso);
+      setYearButtonValue(editProjectYearButton, parts.year, dateIso);
+      editProjectSuffixInput.value = parts.suffix;
+      syncEditProjectNumber();
+    }
+
+    function wireProjectSuffixInput(input, syncFn) {
+      input.addEventListener("focus", () => {
+        input.value = "";
+        syncFn();
+      });
+
+      input.addEventListener("input", () => {
+        input.value = sanitizeDigits(input.value, 3);
+        syncFn();
+      });
+
+      input.addEventListener("blur", () => {
+        input.value = sanitizeDigits(input.value, 3);
+        if (input.value) {
+          input.value = input.value.padStart(3, "0");
+        }
+        syncFn();
+      });
+    }
+
+    function getWrappedYearTwo(value) {
+      const normalized = ((value % 100) + 100) % 100;
+      return leftPad2(normalized);
+    }
+
+    function buildYearOptions(centerYearTwo) {
+      const center = Number.parseInt(centerYearTwo, 10);
+      const base = Number.isFinite(center) ? center : Number.parseInt(getYearTwoFromIso(dateInput.value), 10);
+      const options = [];
+      for (let offset = -2; offset <= 2; offset += 1) {
+        options.push(getWrappedYearTwo(base + offset));
+      }
+      return options;
+    }
+
+    function openYearPicker(target) {
+      yearPickerTarget = target;
+      const dateForTarget = target === "edit" ? (editDateInput.value || dateInput.value) : dateInput.value;
+      const currentYear = target === "edit"
+        ? getYearButtonValue(editProjectYearButton, dateForTarget)
+        : getYearButtonValue(projectYearButton, dateForTarget);
+      const options = buildYearOptions(currentYear);
+      yearPickerOptions.innerHTML = "";
+      options.forEach((yearToken) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `year-option${yearToken === currentYear ? " active-year" : ""}`;
+        button.dataset.year = yearToken;
+        button.textContent = yearToken;
+        yearPickerOptions.appendChild(button);
+      });
+      yearPickerDialog.hidden = false;
+    }
+
+    function closeYearPicker() {
+      yearPickerDialog.hidden = true;
+      yearPickerTarget = "";
+    }
+
+    function applyYearFromPicker(yearToken) {
+      if (!yearPickerTarget) return;
+      if (yearPickerTarget === "edit") {
+        setYearButtonValue(editProjectYearButton, yearToken, editDateInput.value || dateInput.value);
+        syncEditProjectNumber();
+      } else {
+        setYearButtonValue(projectYearButton, yearToken, dateInput.value);
+        syncMainProjectNumber();
+      }
+      closeYearPicker();
+    }
+
+    function parseTimeToMinutes(value) {
+      if (!/^\d{2}:\d{2}$/.test(value || "")) return NaN;
+      const parts = value.split(":");
+      const hours = Number(parts[0]);
+      const minutes = Number(parts[1]);
+      if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return NaN;
+      return hours * 60 + minutes;
+    }
+
+    function normalizeTimeInputValue(rawValue) {
+      const raw = String(rawValue || "").trim().replace(/[.,]/g, ":").replace(/\s+/g, "");
+      if (raw === "") return "";
+
+      let h = NaN;
+      let m = NaN;
+
+      if (/^\d{1,2}:\d{1,2}$/.test(raw)) {
+        const parts = raw.split(":");
+        h = Number(parts[0]);
+        m = Number(parts[1]);
+      } else if (/^\d{3,4}$/.test(raw)) {
+        if (raw.length === 3) {
+          h = Number(raw.slice(0, 1));
+          m = Number(raw.slice(1));
+        } else {
+          h = Number(raw.slice(0, 2));
+          m = Number(raw.slice(2));
+        }
+      } else if (/^\d{1,2}$/.test(raw)) {
+        h = Number(raw);
+        m = 0;
+      } else {
+        return rawValue;
+      }
+
+      if (!Number.isFinite(h) || !Number.isFinite(m) || h < 0 || h > 23 || m < 0 || m > 59) {
+        return rawValue;
+      }
+
+      const hh = h < 10 ? `0${h}` : String(h);
+      const mm = m < 10 ? `0${m}` : String(m);
+      return `${hh}:${mm}`;
+    }
+
+    function calcExpectedHours(startTime, endTime, breakMinutes) {
+      const start = parseTimeToMinutes(startTime);
+      const end = parseTimeToMinutes(endTime);
+      if (!Number.isFinite(start) || !Number.isFinite(end)) return NaN;
+      if (!Number.isFinite(breakMinutes) || breakMinutes < 0) return NaN;
+
+      const netMinutes = end - start - breakMinutes;
+      if (netMinutes < 0) return NaN;
+      return netMinutes / 60;
+    }
+
+    function validateEntry(entry) {
+      if (!entry.date) {
+        return "Bitte ein Datum wählen.";
+      }
+
+      const employeeCode = sanitizeEmployeeCode(entry.employeeCode);
+      if (!employeeCode) {
+        return "Mitarbeiterkürzel ist Pflicht.";
+      }
+      entry.employeeCode = employeeCode;
+
+      const projectText = String(entry.projectNumber || "").trim().toUpperCase();
+      const hasProject = projectText !== "" && !/^\d{2}VG0$/.test(projectText);
+      if (hasProject && !isValidProjectNumber(entry.projectNumber)) {
+        return "Vorgangsnr. bitte im Format 26VG0128 eingeben. Du kannst auch nur die letzten 3 Ziffern eingeben.";
+      }
+
+      if (!Number.isFinite(entry.breakMinutes) || entry.breakMinutes < 0 || !Number.isInteger(entry.breakMinutes)) {
+        return "Pause bitte als ganze Minuten eingeben (z. B. 45).";
+      }
+
+      if (entry.startTime && entry.endTime) {
+        const expectedHours = calcExpectedHours(entry.startTime, entry.endTime, entry.breakMinutes);
+        if (!Number.isFinite(expectedHours)) {
+          return "Anfangszeit, Endzeit und Pause sind nicht plausibel.";
+        }
+      }
+
+      const hasHours = String(entry.hours ?? "").trim() !== "";
+      if (hasHours && (!Number.isFinite(Number(entry.hours)) || Number(entry.hours) <= 0)) {
+        return "Stunden bitte als Zahl eingeben (Komma oder Punkt erlaubt).";
+      }
+
+      const hasAnyContent = [
+        entry.employeeCode,
+        entry.startTime,
+        entry.endTime,
+        entry.customerName,
+        entry.projectNumber,
+        entry.costCenter,
+        entry.activity,
+        entry.hours
+      ].some((value) => String(value ?? "").trim() !== "")
+        || Boolean(entry.isByEffort);
+      if (!hasAnyContent) {
+        return "Bitte mindestens ein Feld ausfüllen.";
+      }
+
+      return "";
+    }
+
+    function openEditDialog(entryId) {
+      const entry = entries.find((item) => item.id === entryId);
+      if (!entry) return;
+
+      editingEntryId = entry.id;
+      editDateInput.value = entry.date || "";
+      editEmployeeCodeInput.value = sanitizeEmployeeCode(entry.employeeCode || "");
+      editStartTimeInput.value = entry.startTime || "";
+      editEndTimeInput.value = entry.endTime || "";
+      editBreakMinutesInput.value = String(normalizeBreakMinutesValue(entry.breakMinutes ?? 0));
+      editHoursInput.value = Number.isFinite(Number(entry.hours)) ? String(entry.hours).replace(".", ",") : "";
+      editCustomerNameInput.value = entry.customerName || "";
+      editCostCenterInput.value = sanitizeCostCenter(entry.costCenter || "");
+      editIsByEffortInput.checked = Boolean(entry.isByEffort);
+      setEditProjectParts(entry.projectNumber || "", entry.date || dateInput.value);
+      editActivityInput.value = entry.activity || "";
+      autoGrowTextarea(editActivityInput);
+      editDialog.hidden = false;
+    }
+
+    function closeEditDialog() {
+      editingEntryId = null;
+      editDialog.hidden = true;
+    }
+
+    function openCostPicker(targetInput) {
+      if (!targetInput) return;
+      costPickerTargetInput = targetInput;
+      costPickerBackdrop.hidden = false;
+    }
+
+    function closeCostPickerDialog() {
+      costPickerBackdrop.hidden = true;
+      costPickerTargetInput = null;
+    }
+
+    function getEntriesForSelectedDay() {
+      const selectedDate = normalizeEntryDateIso(dateInput.value);
+      if (!selectedDate) return [];
+      return entries.filter((entry) => normalizeEntryDateIso(entry.date) === selectedDate);
+    }
+
+    function getEntriesForExport(scope) {
+      const selectedDate = normalizeEntryDateIso(dateInput.value);
+      if (!selectedDate) return [];
+      if (scope === "week") {
+        const range = getWeekRangeIso(selectedDate);
+        if (!range) return [];
+        return entries.filter((entry) => {
+          const entryDate = normalizeEntryDateIso(entry.date);
+          return entryDate >= range.start && entryDate <= range.end;
+        });
+      }
+      return entries.filter((entry) => normalizeEntryDateIso(entry.date) === selectedDate);
+    }
+
+    function parseIsoDateLocal(iso) {
+      if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
+      const parts = iso.split("-").map(Number);
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+
+    function leftPad2(value) {
+      const text = String(value);
+      return text.length < 2 ? `0${text}` : text;
+    }
+
+    function toIsoDate(date) {
+      const year = date.getFullYear();
+      const month = leftPad2(date.getMonth() + 1);
+      const day = leftPad2(date.getDate());
+      return `${year}-${month}-${day}`;
+    }
+
+    function getWeekRangeIso(isoDate) {
+      const date = parseIsoDateLocal(isoDate);
+      if (!date) return null;
+      const dayIndex = (date.getDay() + 6) % 7;
+      const weekStart = new Date(date);
+      weekStart.setDate(date.getDate() - dayIndex);
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 6);
+      return { start: toIsoDate(weekStart), end: toIsoDate(weekEnd) };
+    }
+
+    function autoGrowTextarea(textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+
+    function autoGrowActivity() {
+      autoGrowTextarea(activityInput);
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function updateTotal(dayEntries) {
+      const total = dayEntries.reduce((sum, entry) => {
+        const value = Number(entry.hours);
+        return sum + (Number.isFinite(value) ? value : 0);
+      }, 0);
+      totalHoursLabel.textContent = fmtHours(total);
+      return total;
+    }
+
+    function setHourCheck(mode, title, text) {
+      hourCheck.className = `hour-check ${mode}`;
+      hourCheckTitle.textContent = title;
+      hourCheckText.textContent = text;
+    }
+
+    function updateHourCheck(dayEntries, enteredHours) {
+      const start = startTimeInput.value;
+      const end = endTimeInput.value;
+      const breakMinutes = parseBreakMinutes(breakMinutesInput.value);
+
+      if (!start && !end) {
+        setHourCheck("neutral", "Stundenprüfung optional", "Für Soll-Ist-Abgleich Anfangszeit und Endzeit setzen.");
+        return;
+      }
+
+      if (!start || !end) {
+        setHourCheck("neutral", "Stundenprüfung offen", "Bitte Anfangszeit und Endzeit beide setzen.");
+        return;
+      }
+
+      const expectedHours = calcExpectedHours(start, end, breakMinutes);
+      if (!Number.isFinite(expectedHours)) {
+        setHourCheck("neutral", "Stundenprüfung offen", "Anfangszeit, Endzeit und Pause sind nicht plausibel.");
+        return;
+      }
+
+      const diff = enteredHours - expectedHours;
+      const tolerance = 0.01;
+
+      if (Math.abs(diff) <= tolerance) {
+        setHourCheck(
+          "ok",
+          "Alles vollständig",
+          `Soll: ${fmtHours(expectedHours)} h | Eingetragen: ${fmtHours(enteredHours)} h`
+        );
+        return;
+      }
+
+      if (diff < -tolerance) {
+        setHourCheck(
+          "warn",
+          "Es fehlen Stunden",
+          `${fmtHours(-diff)} h fehlen (Soll: ${fmtHours(expectedHours)} h, Eingetragen: ${fmtHours(enteredHours)} h)`
+        );
+        return;
+      }
+
+      setHourCheck(
+        "over",
+        "Zu viele Stunden eingetragen",
+        `${fmtHours(diff)} h zu viel (Soll: ${fmtHours(expectedHours)} h, Eingetragen: ${fmtHours(enteredHours)} h)`
+      );
+    }
+
+    function render() {
+      entryList.innerHTML = "";
+      const dayEntries = getEntriesForSelectedDay();
+      const sorted = [...dayEntries].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+      viewInfoLabel.textContent = `Angezeigter Tag: ${dateInput.value || "-"}`;
+
+      if (sorted.length === 0) {
+        entryList.innerHTML = '<div class="empty">Für diesen Tag sind noch keine Einträge vorhanden.</div>';
+        const entered = updateTotal([]);
+        updateHourCheck([], entered);
+        if (!exportDialog.hidden) refreshExportDialog(exportScope);
+        return;
+      }
+
+      sorted.forEach((entry) => {
+        const card = document.createElement("article");
+        card.className = "entry-card";
+        const hoursLabel = Number.isFinite(Number(entry.hours)) ? `${fmtHours(entry.hours)} h` : "-";
+        const costCenterLabel = String(entry.costCenter || "").trim() || "-";
+        card.innerHTML = `
+          <div class="entry-meta">${escapeHtml(entry.customerName)} | ${escapeHtml(entry.projectNumber)} | ${escapeHtml(costCenterLabel)}</div>
+          <div class="entry-main">
+            <span class="entry-hours">${hoursLabel}</span>
+            <span class="entry-activity">${escapeHtml(entry.activity)}</span>
+            <div class="entry-actions">
+              <button class="entry-edit" type="button" data-action="edit" data-id="${entry.id}">Bearbeiten</button>
+              <button class="entry-delete danger" type="button" data-action="delete" data-id="${entry.id}">X</button>
+            </div>
+          </div>
+        `;
+        entryList.appendChild(card);
+      });
+
+      const entered = updateTotal(sorted);
+      updateHourCheck(sorted, entered);
+      if (!exportDialog.hidden) refreshExportDialog(exportScope);
+    }
+
+    function clearInputsForNewDay() {
+      employeeCodeInput.value = "";
+      startTimeInput.value = "";
+      endTimeInput.value = "";
+      breakMinutesInput.value = "0";
+      hoursInput.value = "";
+      customerNameInput.value = "";
+      costCenterInput.value = "";
+      isByEffortInput.checked = false;
+      setMainProjectParts("", dateInput.value);
+      activityInput.value = "";
+      autoGrowActivity();
+    }
+
+    function hydrateInputsForDate() {
+      const dayEntries = getEntriesForSelectedDay();
+      if (dayEntries.length === 0) {
+        clearInputsForNewDay();
+        return;
+      }
+
+      const last = dayEntries[dayEntries.length - 1];
+      employeeCodeInput.value = sanitizeEmployeeCode(last.employeeCode || "");
+      startTimeInput.value = last.startTime || "";
+      endTimeInput.value = last.endTime || "";
+      breakMinutesInput.value = String(normalizeBreakMinutesValue(last.breakMinutes ?? 0));
+      hoursInput.value = Number.isFinite(Number(last.hours)) ? String(last.hours).replace(".", ",") : "";
+      customerNameInput.value = last.customerName || "";
+      costCenterInput.value = sanitizeCostCenter(last.costCenter || "");
+      isByEffortInput.checked = Boolean(last.isByEffort);
+      setMainProjectParts(last.projectNumber || "", dateInput.value);
+      activityInput.value = "";
+      autoGrowActivity();
+    }
+
+    function closeExportDialog() {
+      exportDialog.hidden = true;
+    }
+
+    function setExportScopeButtons(scope) {
+      exportDayButton.classList.toggle("active-scope", scope === "day");
+      exportWeekButton.classList.toggle("active-scope", scope === "week");
+    }
+
+    function formatHoursExport(value) {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return "";
+      return num.toFixed(2).replace(".", ",");
+    }
+
+    function formatBreakMinutesExport(value) {
+      if (value === "" || value == null) return "";
+      return String(normalizeBreakMinutesValue(value));
+    }
+
+    function formatByEffortExport(value) {
+      return value ? "Ja" : "Nein";
+    }
+
+    function computeExportTotalHours(entries) {
+      if (!Array.isArray(entries) || entries.length === 0) return 0;
+      return entries.reduce((sum, entry) => {
+        const value = Number(entry && entry.hours);
+        return sum + (Number.isFinite(value) ? value : 0);
+      }, 0);
+    }
+
+    function appendExportRowEndMarker(activity) {
+      const cleanActivity = sanitizeTsvCell(activity);
+      if (!cleanActivity) return EXPORT_ROW_END_MARKER;
+      return `${cleanActivity} ${EXPORT_ROW_END_MARKER}`;
+    }
+
+    function formatIsoToGerman(isoDate) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(String(isoDate || ""))) return String(isoDate || "");
+      const parts = String(isoDate).split("-");
+      return `${parts[2]}.${parts[1]}.${parts[0]}`;
+    }
+
+    function sanitizeSubjectPart(value) {
+      return String(value ?? "")
+        .replace(/\r?\n/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function pickSubjectValue(entries, fieldName, fallbackValue) {
+      const values = Array.from(
+        new Set(
+          entries
+            .map((entry) => sanitizeSubjectPart(entry[fieldName]))
+            .filter(Boolean)
+        )
+      );
+      if (values.length === 0) return fallbackValue;
+      if (values.length === 1) return values[0];
+      return "Mehrere";
+    }
+
+    function pickSubjectValueJoined(entries, fieldName, fallbackValue) {
+      const values = Array.from(
+        new Set(
+          entries
+            .map((entry) => sanitizeSubjectPart(entry[fieldName]))
+            .filter(Boolean)
+        )
+      );
+      if (values.length === 0) return fallbackValue;
+      return values.join(", ");
+    }
+
+    function sanitizeTsvCell(value) {
+      return String(value ?? "")
+        .replace(/\t/g, " ")
+        .replace(/\r?\n/g, " ")
+        .trim();
+    }
+
+    function parseTemplateBool(value) {
+      const text = String(value || "").trim().toLowerCase();
+      if (text === "") return null;
+      if (["ja", "j", "true", "1", "x"].includes(text)) return true;
+      if (["nein", "n", "false", "0"].includes(text)) return false;
+      return null;
+    }
+
+    function parseTemplateProjectYear(value) {
+      const raw = String(value || "").trim().toUpperCase().replace(/\s+/g, "");
+      if (!raw) return "";
+      const plain2 = raw.match(/^(\d{2})$/);
+      if (plain2) return plain2[1];
+      const plain4 = raw.match(/^(\d{4})$/);
+      if (plain4) return plain4[1].slice(2);
+      const vg = raw.match(/^(\d{2})VG0?$/);
+      if (vg) return vg[1];
+      const any = raw.match(/^(\d{2})/);
+      if (any) return any[1];
+      return "";
+    }
+
+    function parseTemplateProjectSuffix(value) {
+      const digits = sanitizeDigits(String(value || ""));
+      if (!digits) return "";
+      return digits.slice(-3);
+    }
+
+    function normalizeTemplateHeader(value) {
+      return String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/ä/g, "ae")
+        .replace(/ö/g, "oe")
+        .replace(/ü/g, "ue")
+        .replace(/ß/g, "ss")
+        .replace(/[^a-z0-9]+/g, "");
+    }
+
+    function normalizeTemplateTextCell(value) {
+      const text = String(value || "").trim();
+      if (!text) return "";
+      if (/^leer$/i.test(text) || text === "-") return "";
+      return text;
+    }
+
+    function parseTemplateCsv(text) {
+      const rawLines = String(text || "")
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter((line) => {
+          if (line === "") return false;
+          if (line.startsWith("#")) return false;
+          // Excel-exportierte Kommentarzeilen können so aussehen: "# ..."
+          if (line.startsWith("\"#")) return false;
+          return true;
+        });
+      if (rawLines.length === 0) return [];
+
+      const header = rawLines[0].split(";").map((cell) => cell.trim());
+      const normalizedHeader = header.map(normalizeTemplateHeader);
+      const byCandidates = (candidates) => normalizedHeader.findIndex((h) => candidates.includes(h));
+      const indices = {
+        label: byCandidates(["buttonname", "label", "vorlage", "name"]),
+        customerName: byCandidates(["kunde", "kundenname", "customername"]),
+        projectPrefix: byCandidates(["vorgangspraefix", "vorgangpraefix", "vorgangprefix", "praefix", "prefix", "jahr", "jahr2"]),
+        projectSuffix: byCandidates(["vorgangsuffix", "vorgangnr", "vorgangsnr", "projectsuffix", "suffix"]),
+        costCenter: byCandidates(["kostenstelle", "costcenter", "kst"]),
+        isByEffort: byCandidates(["nachaufwand", "aufwand", "isbyeffort"]),
+        activity: byCandidates(["taetigkeit", "tatigkeit", "activity"]),
+        startTime: byCandidates(["startzeit", "starttime", "start"]),
+        endTime: byCandidates(["endzeit", "endtime", "ende"]),
+        breakMinutes: byCandidates(["pause", "pauseminuten", "pausenminuten", "breakminutes", "pausemin"]),
+        hours: byCandidates(["stunden", "hours"])
+      };
+
+      const getCell = (cells, index) => (index >= 0 && index < cells.length ? cells[index].trim() : "");
+      return rawLines.slice(1)
+        .map((line, index) => {
+          const cells = line.split(";").map((cell) => cell.trim());
+          const label = normalizeTemplateTextCell(getCell(cells, indices.label)) || `Vorlage ${index + 1}`;
+          const customerName = normalizeTemplateTextCell(getCell(cells, indices.customerName));
+          const projectPrefix = parseTemplateProjectYear(normalizeTemplateTextCell(getCell(cells, indices.projectPrefix)));
+          const projectSuffix = parseTemplateProjectSuffix(normalizeTemplateTextCell(getCell(cells, indices.projectSuffix)));
+          const costCenterRaw = normalizeTemplateTextCell(getCell(cells, indices.costCenter)).toUpperCase();
+          const costCenterMatch = costCenterRaw.match(/\b[A-Z]{3}\b/);
+          const activity = normalizeTemplateTextCell(getCell(cells, indices.activity));
+          const startTime = normalizeTemplateTextCell(getCell(cells, indices.startTime));
+          const endTime = normalizeTemplateTextCell(getCell(cells, indices.endTime));
+          const breakMinutes = normalizeTemplateTextCell(getCell(cells, indices.breakMinutes));
+          const hours = normalizeTemplateTextCell(getCell(cells, indices.hours));
+          return {
+            id: `tpl-${index}`,
+            label,
+            customerName,
+            projectPrefix,
+            projectSuffix,
+            costCenter: costCenterMatch ? costCenterMatch[0] : costCenterRaw,
+            isByEffort: parseTemplateBool(getCell(cells, indices.isByEffort)),
+            activity,
+            startTime,
+            endTime,
+            breakMinutes,
+            hours
+          };
+        })
+        .filter((item) => item.label);
+    }
+
+    function renderTemplateButtons() {
+      if (!templateButtons) return;
+      if (!templates.length) {
+        templateButtons.innerHTML = '<span class="muted">Keine Vorlagen geladen.</span>';
+        return;
+      }
+      templateButtons.innerHTML = templates
+        .map((tpl) => `<button type="button" class="template-btn" data-template-id="${escapeHtml(tpl.id)}">${escapeHtml(tpl.label)}</button>`)
+        .join("");
+    }
+
+    function applyTemplate(templateId) {
+      const tpl = templates.find((item) => item.id === templateId);
+      if (!tpl) return;
+
+      customerNameInput.value = tpl.customerName || "";
+      if (tpl.projectPrefix) {
+        setYearButtonValue(projectYearButton, tpl.projectPrefix, dateInput.value);
+      }
+      projectSuffixInput.value = sanitizeDigits(tpl.projectSuffix || "", 3);
+      costCenterInput.value = sanitizeCostCenter(tpl.costCenter || "");
+      isByEffortInput.checked = typeof tpl.isByEffort === "boolean" ? tpl.isByEffort : false;
+      activityInput.value = tpl.activity || "";
+      const tplStart = String(tpl.startTime || "").trim();
+      const tplEnd = String(tpl.endTime || "").trim();
+      const tplBreak = String(tpl.breakMinutes ?? "").trim();
+      if (tplStart) startTimeInput.value = normalizeTimeInputValue(tplStart);
+      if (tplEnd) endTimeInput.value = normalizeTimeInputValue(tplEnd);
+      if (tplBreak !== "") breakMinutesInput.value = String(normalizeBreakMinutesValue(tplBreak));
+      hoursInput.value = tpl.hours || "";
+
+      syncMainProjectNumber();
+      autoGrowActivity();
+      render();
+      if (!costPickerBackdrop.hidden) {
+        closeCostPickerDialog();
+      }
+      setFormMessage(`Vorlage "${tpl.label}" angewendet.`, false);
+    }
+
+    async function loadTemplatesFromCsv() {
+      renderTemplateButtons();
+      try {
+        const response = await fetch(TEMPLATE_CSV_FILE, { cache: "no-store" });
+        if (!response.ok) throw new Error(`CSV nicht gefunden (${response.status})`);
+        const text = await response.text();
+        const parsed = parseTemplateCsv(text);
+        if (parsed.length > 0) {
+          templates = parsed;
+          renderTemplateButtons();
+          return;
+        }
+      } catch {
+        // Fallback: ohne CSV bleiben nur Default-Vorlagen aktiv.
+      }
+      renderTemplateButtons();
+    }
+
+    function buildDraftEntryFromInputs() {
+      syncMainProjectNumber();
+      const hours = parseDecimal(hoursInput.value);
+      const breakMinutes = parseBreakMinutes(breakMinutesInput.value);
+      return {
+        date: dateInput.value || "",
+        employeeCode: sanitizeEmployeeCode(employeeCodeInput.value),
+        startTime: startTimeInput.value || "",
+        endTime: endTimeInput.value || "",
+        breakMinutes: Number.isFinite(breakMinutes) ? breakMinutes : "",
+        customerName: customerNameInput.value.trim(),
+        projectNumber: normalizeOptionalProjectNumber(projectNumberInput.value, dateInput.value),
+        costCenter: sanitizeCostCenter(costCenterInput.value),
+        isByEffort: Boolean(isByEffortInput.checked),
+        hours: Number.isFinite(hours) && hours > 0 ? hours : "",
+        activity: activityInput.value.trim()
+      };
+    }
+
+    function hasDraftContent(entry) {
+      if (!entry) return false;
+      const hasProject = isValidProjectNumber(entry.projectNumber);
+      return [
+        entry.employeeCode,
+        entry.startTime,
+        entry.endTime,
+        entry.customerName,
+        entry.costCenter,
+        entry.activity,
+        entry.hours
+      ].some((value) => String(value ?? "").trim() !== "")
+        || hasProject
+        || Boolean(entry.isByEffort);
+    }
+
+    function getExportSubject(scope, exportEntries) {
+      const dateToken = formatIsoToGerman(dateInput.value || "");
+      const employeeCode = pickSubjectValue(
+        exportEntries,
+        "employeeCode",
+        sanitizeEmployeeCode(employeeCodeInput.value) || "XX"
+      );
+      const customerNameJoined = pickSubjectValueJoined(
+        exportEntries,
+        "customerName",
+        sanitizeSubjectPart(customerNameInput.value) || "Unbekannt"
+      );
+      const customerNameForSubject = customerNameJoined.length > 60 ? "Mehrere" : customerNameJoined;
+
+      return `${sanitizeEmployeeCode(employeeCode)} ${dateToken} Stundenzettel ${customerNameForSubject}`.trim();
+    }
+
+    function canUseCompactDayExport(sortedEntries) {
+      if (!Array.isArray(sortedEntries) || sortedEntries.length === 0) return false;
+      const first = sortedEntries[0];
+      const date = sanitizeTsvCell(first.date || "");
+      const employeeCode = sanitizeTsvCell(first.employeeCode || "");
+      const startTime = sanitizeTsvCell(first.startTime || "");
+      const breakMinutes = sanitizeTsvCell(formatBreakMinutesExport(first.breakMinutes));
+      const endTime = sanitizeTsvCell(first.endTime || "");
+      if (!date || !employeeCode) return false;
+      return sortedEntries.every((entry) => (
+        sanitizeTsvCell(entry.date || "") === date
+        && sanitizeTsvCell(entry.employeeCode || "") === employeeCode
+        && sanitizeTsvCell(entry.startTime || "") === startTime
+        && sanitizeTsvCell(formatBreakMinutesExport(entry.breakMinutes)) === breakMinutes
+        && sanitizeTsvCell(entry.endTime || "") === endTime
+      ));
+    }
+
+    function buildExportTsv(source) {
+      const rows = [...source]
+        .sort((a, b) => {
+          const byDate = a.date.localeCompare(b.date);
+          if (byDate !== 0) return byDate;
+          return (a.createdAt || 0) - (b.createdAt || 0);
+        });
+      const controlHours = sanitizeTsvCell(formatHoursExport(computeExportTotalHours(rows)));
+
+      if (canUseCompactDayExport(rows)) {
+        const first = rows[0];
+        const dayValues = [
+          sanitizeTsvCell(first.date),
+          sanitizeTsvCell(first.employeeCode),
+          sanitizeTsvCell(first.startTime || ""),
+          sanitizeTsvCell(formatBreakMinutesExport(first.breakMinutes)),
+          sanitizeTsvCell(first.endTime || ""),
+          controlHours
+        ];
+        const compactRows = rows.map((entry) => [
+          sanitizeTsvCell(entry.customerName),
+          sanitizeTsvCell(entry.projectNumber || "-"),
+          sanitizeTsvCell((entry.costCenter || "").trim() || "-"),
+          sanitizeTsvCell(formatByEffortExport(Boolean(entry.isByEffort))),
+          sanitizeTsvCell(formatHoursExport(entry.hours)),
+          appendExportRowEndMarker(entry.activity)
+        ]);
+        return [
+          APP_VERSION,
+          dayValues.join(" "),
+          ...compactRows.map((row) => row.join(" "))
+        ].join("\r\n");
+      }
+
+      const fullHeader = [
+        "Datum",
+        "Mitarbeiterkürzel",
+        "Anfangszeit",
+        "Pause (Min)",
+        "Endzeit",
+        "Kundenname",
+        "Vorgangsnr.",
+        "Kostenstelle",
+        "Nach Aufwand?",
+        "Stunden",
+        "Tätigkeit"
+      ];
+      const fullRows = rows.map((entry) => [
+        sanitizeTsvCell(entry.date),
+        sanitizeTsvCell(entry.employeeCode),
+        sanitizeTsvCell(entry.startTime || ""),
+        sanitizeTsvCell(formatBreakMinutesExport(entry.breakMinutes)),
+        sanitizeTsvCell(entry.endTime || ""),
+        sanitizeTsvCell(entry.customerName),
+        sanitizeTsvCell(entry.projectNumber || "-"),
+        sanitizeTsvCell((entry.costCenter || "").trim() || "-"),
+        sanitizeTsvCell(formatByEffortExport(Boolean(entry.isByEffort))),
+        sanitizeTsvCell(formatHoursExport(entry.hours)),
+        appendExportRowEndMarker(entry.activity)
+      ]);
+      return [fullHeader.join("\t"), ...fullRows.map((row) => row.join("\t"))].join("\r\n");
+    }
+
+    function refreshExportDialog(scope) {
+      exportScope = scope;
+      setExportScopeButtons(scope);
+
+      const exportEntries = getEntriesForExport(scope);
+      if (exportEntries.length === 0) {
+        currentExportText = "";
+        currentExportSubject = getExportSubject(scope, []);
+        exportOutput.value = "";
+        exportMeta.textContent = "Keine Einträge für den gewählten Zeitraum.";
+        copyExportButton.disabled = true;
+        mailExportButton.disabled = true;
+        return;
+      }
+
+      currentExportText = buildExportTsv(exportEntries);
+      currentExportSubject = getExportSubject(scope, exportEntries);
+      exportOutput.value = currentExportText;
+
+      if (scope === "week") {
+        const range = getWeekRangeIso(dateInput.value);
+        exportMeta.textContent = range
+          ? `${exportEntries.length} Einträge | Woche ${range.start} bis ${range.end}`
+          : `${exportEntries.length} Einträge | Woche`;
+      } else {
+        exportMeta.textContent = `${exportEntries.length} Einträge | Tag ${dateInput.value || "-"}`;
+      }
+
+      copyExportButton.disabled = false;
+      mailExportButton.disabled = false;
+    }
+
+    function openExportDialog() {
+      exportDialog.hidden = false;
+      refreshExportDialog(exportScope);
+    }
+
+    function copyExportContent() {
+      if (!currentExportText) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(currentExportText).then(() => {
+          exportMeta.textContent = "Export kopiert.";
+        }).catch(() => {
+          window.prompt("Export kopieren:", currentExportText);
+        });
+        return;
+      }
+      window.prompt("Export kopieren:", currentExportText);
+    }
+
+    async function openMailtoWithFallback(subject, body, updateUiFn) {
+      const mailto = `mailto:${OFFICE_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      if (mailto.length <= MAILTO_MAX_LENGTH) {
+        window.location.href = mailto;
+        return true;
+      }
+
+      let copied = false;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(body);
+          copied = true;
+        } catch {
+          copied = false;
+        }
+      }
+
+      const fallbackBody = copied
+        ? "Der vollständige Stundenzettel wurde in die Zwischenablage kopiert. Bitte hier einfügen."
+        : "Der vollständige Stundenzettel ist zu lang für den Direktversand auf diesem Gerät. Bitte Export öffnen und Inhalt kopieren.";
+      const fallbackMailto = `mailto:${OFFICE_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(fallbackBody)}`;
+      window.location.href = fallbackMailto;
+
+      if (copied) {
+        if (typeof updateUiFn === "function") {
+          updateUiFn("Mailtext war zu lang. Volltext wurde in die Zwischenablage kopiert.");
+        }
+        alert("Mailtext war zu lang für den Direktversand. Der Volltext wurde in die Zwischenablage kopiert. Bitte in die geöffnete Mail einfügen.");
+      } else {
+        if (typeof updateUiFn === "function") {
+          updateUiFn("Mailtext war zu lang. Bitte Export öffnen und Inhalt kopieren.");
+        }
+        alert("Mailtext war zu lang für den Direktversand und konnte nicht automatisch kopiert werden. Bitte 'Export öffnen' und dann 'Inhalt kopieren' nutzen.");
+      }
+      return false;
+    }
+
+    async function openExportMail() {
+      if (!currentExportText) return;
+      await openMailtoWithFallback(currentExportSubject, currentExportText, (message) => {
+        exportMeta.textContent = message;
+      });
+    }
+
+    function evaluateDayForSending(exportEntries) {
+      if (!Array.isArray(exportEntries) || exportEntries.length === 0) {
+        return { ok: false, message: "Keine Einträge zum Senden vorhanden." };
+      }
+
+      let hasInvalidHours = false;
+      let enteredHours = 0;
+      const startValues = new Set();
+      const endValues = new Set();
+      const breakValues = new Set();
+      let hasInvalidRowBreak = false;
+
+      exportEntries.forEach((entry) => {
+        const rowStart = String((entry && entry.startTime) || "").trim();
+        const rowEnd = String((entry && entry.endTime) || "").trim();
+        startValues.add(rowStart);
+        endValues.add(rowEnd);
+
+        const rowBreakRaw = String((entry && entry.breakMinutes) ?? "").trim();
+        let rowBreak = NaN;
+        if (/^\d+$/.test(rowBreakRaw)) {
+          rowBreak = Number(rowBreakRaw);
+        } else if (rowBreakRaw !== "" && /^\d+[.,]\d+$/.test(rowBreakRaw)) {
+          rowBreak = normalizeBreakMinutesValue(rowBreakRaw);
+        } else if (rowBreakRaw === "") {
+          rowBreak = 0;
+        }
+        if (!Number.isFinite(rowBreak) || rowBreak < 0 || !Number.isInteger(rowBreak)) {
+          hasInvalidRowBreak = true;
+        } else {
+          breakValues.add(rowBreak);
+        }
+
+        const hours = Number(entry && entry.hours);
+        if (!Number.isFinite(hours) || hours <= 0) {
+          hasInvalidHours = true;
+        } else {
+          enteredHours += hours;
+        }
+      });
+
+      if (hasInvalidHours) {
+        return { ok: false, message: "Versand gesperrt: Mindestens eine Zeile hat ungültige Stunden." };
+      }
+
+      if (startValues.size !== 1 || endValues.size !== 1 || breakValues.size !== 1 || hasInvalidRowBreak) {
+        return { ok: false, message: "Versand gesperrt: Tagesdaten in den Zeilen sind uneinheitlich oder ungültig." };
+      }
+
+      const start = [...startValues][0];
+      const end = [...endValues][0];
+      if (!start || !end) {
+        return { ok: false, message: "Versand gesperrt: Anfangszeit und Endzeit sind Pflicht." };
+      }
+
+      const breakMinutes = [...breakValues][0];
+
+      const expectedHours = calcExpectedHours(start, end, breakMinutes);
+      if (!Number.isFinite(expectedHours)) {
+        return { ok: false, message: "Versand gesperrt: Tagesdaten sind nicht plausibel (Anfang, Ende, Pause)." };
+      }
+
+      const diff = enteredHours - expectedHours;
+      const tolerance = 0.01;
+      if (Math.abs(diff) > tolerance) {
+        const delta = fmtHours(Math.abs(diff));
+        const direction = diff < 0 ? "fehlen" : "zu viel";
+        return {
+          ok: false,
+          message: `Versand gesperrt: Tag passt nicht. Soll ${fmtHours(expectedHours)} h, Eingetragen ${fmtHours(enteredHours)} h (${delta} h ${direction}).`
+        };
+      }
+
+      return { ok: true };
+    }
+
+    async function sendSimpleMailForDay() {
+      const dayEntries = getEntriesForExport("day");
+      const draftEntry = buildDraftEntryFromInputs();
+      const exportEntries = dayEntries.length > 0
+        ? dayEntries
+        : (hasDraftContent(draftEntry) ? [draftEntry] : []);
+      const hasMissingEmployeeCode = exportEntries.some((entry) => !sanitizeEmployeeCode(entry && entry.employeeCode));
+      if (hasMissingEmployeeCode) {
+        setFormMessage("Mitarbeiterkürzel ist Pflicht.", true);
+        alert("Bitte Mitarbeiterkürzel ausfüllen, bevor du sendest.");
+        employeeCodeInput.focus();
+        employeeCodeInput.select();
+        return;
+      }
+
+      const dayCheck = evaluateDayForSending(exportEntries);
+      if (!dayCheck.ok) {
+        setFormMessage(dayCheck.message, true);
+        alert(dayCheck.message);
+        return;
+      }
+
+      const subject = getExportSubject("day", exportEntries);
+      const body = buildExportTsv(exportEntries);
+      await openMailtoWithFallback(subject, body, (message) => {
+        setFormMessage(message, false);
+      });
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      try {
+        syncMainProjectNumber();
+        const breakMinutesRaw = String(breakMinutesInput.value || "").trim();
+        if (!isValidBreakMinutesText(breakMinutesRaw)) {
+          setFormMessage("Pause: Nur ganze Minuten erlaubt.", true);
+          alert("Pause: Nur ganze Minuten erlaubt (z. B. 15). Werte wie 1,5 sind ungültig.");
+          breakMinutesInput.focus();
+          breakMinutesInput.select();
+          return;
+        }
+        const parsedHours = parseDecimal(hoursInput.value);
+        const breakMinutes = parseBreakMinutes(breakMinutesInput.value);
+
+        const entry = {
+          id: generateId(),
+          createdAt: Date.now(),
+          date: normalizeEntryDateIso(dateInput.value),
+          employeeCode: sanitizeEmployeeCode(employeeCodeInput.value),
+          startTime: startTimeInput.value,
+          endTime: endTimeInput.value,
+          breakMinutes,
+          customerName: customerNameInput.value.trim(),
+          projectNumber: normalizeOptionalProjectNumber(projectNumberInput.value, dateInput.value),
+          costCenter: sanitizeCostCenter(costCenterInput.value),
+          isByEffort: Boolean(isByEffortInput.checked),
+          hours: Number.isFinite(parsedHours) && parsedHours > 0 ? parsedHours : "",
+          activity: activityInput.value.trim()
+        };
+
+        const validationMessage = validateEntry(entry);
+        if (validationMessage) {
+          setFormMessage(validationMessage, true);
+          return;
+        }
+
+        entries.push(entry);
+        synchronizeDaySharedFields(entry);
+        saveEntries();
+        render();
+
+        hoursInput.value = "";
+        activityInput.value = "";
+        autoGrowActivity();
+        activityInput.focus();
+        triggerSaveFeedback();
+        setFormMessage("Eintrag gespeichert.", false);
+      } catch (error) {
+        console.error(error);
+        setFormMessage("Speichern fehlgeschlagen. Browser bitte neu laden.", true);
+      }
+    });
+
+    entryList.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLButtonElement)) return;
+      const id = target.dataset.id;
+      if (!id) return;
+
+      const action = target.dataset.action;
+      if (action === "edit") {
+        openEditDialog(id);
+        return;
+      }
+
+      entries = entries.filter((entry) => entry.id !== id);
+      saveEntries();
+      render();
+    });
+
+    clearAllButton.addEventListener("click", () => {
+      if (!confirm("Wirklich alle Einträge löschen?")) return;
+      entries = [];
+      saveEntries();
+      render();
+      setFormMessage("Alle Einträge wurden gelöscht.", false);
+    });
+
+    dateInput.addEventListener("change", () => {
+      hydrateInputsForDate();
+      render();
+      setFormMessage("", false);
+      if (!exportDialog.hidden) {
+        refreshExportDialog(exportScope);
+      }
+    });
+
+    sendMailButton.addEventListener("click", sendSimpleMailForDay);
+    exportDayButton.addEventListener("click", () => refreshExportDialog("day"));
+    exportWeekButton.addEventListener("click", () => refreshExportDialog("week"));
+    copyExportButton.addEventListener("click", copyExportContent);
+    mailExportButton.addEventListener("click", openExportMail);
+    exportCancelButton.addEventListener("click", closeExportDialog);
+    closeCostPickerButton.addEventListener("click", closeCostPickerDialog);
+    yearPickerCancelButton.addEventListener("click", closeYearPicker);
+
+    projectYearButton.addEventListener("click", () => openYearPicker("main"));
+    editProjectYearButton.addEventListener("click", () => openYearPicker("edit"));
+
+    if (pickCostCenterMainButton) {
+      pickCostCenterMainButton.addEventListener("click", () => openCostPicker(costCenterInput));
+    }
+    if (pickCostCenterEditButton) {
+      pickCostCenterEditButton.addEventListener("click", () => openCostPicker(editCostCenterInput));
+    }
+
+    yearPickerDialog.addEventListener("click", (event) => {
+      if (event.target === yearPickerDialog) closeYearPicker();
+    });
+    yearPickerOptions.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLButtonElement)) return;
+      const yearToken = target.dataset.year || "";
+      if (!yearToken) return;
+      applyYearFromPicker(yearToken);
+    });
+
+    costPickerBackdrop.addEventListener("click", (event) => {
+      if (event.target === costPickerBackdrop) closeCostPickerDialog();
+    });
+    costPickerBackdrop.querySelectorAll(".cost-picker-item").forEach((button) => {
+      button.addEventListener("click", () => {
+        const code = button.dataset.code || "";
+        if (!costPickerTargetInput) return;
+        costPickerTargetInput.value = sanitizeCostCenter(code);
+        closeCostPickerDialog();
+      });
+    });
+
+    editSaveButton.addEventListener("click", () => {
+      if (!editingEntryId) return;
+
+      const existing = entries.find((entry) => entry.id === editingEntryId);
+      if (!existing) {
+        closeEditDialog();
+        return;
+      }
+
+      syncEditProjectNumber();
+
+      const updated = {
+        ...existing,
+        date: existing.date,
+        employeeCode: sanitizeEmployeeCode(existing.employeeCode),
+        startTime: existing.startTime || "",
+        endTime: existing.endTime || "",
+        breakMinutes: normalizeBreakMinutesValue(existing.breakMinutes),
+        hours: (() => {
+          const parsed = parseDecimal(editHoursInput.value);
+          return Number.isFinite(parsed) && parsed > 0 ? parsed : "";
+        })(),
+        customerName: editCustomerNameInput.value.trim(),
+        projectNumber: normalizeOptionalProjectNumber(editProjectNumberInput.value, existing.date),
+        costCenter: sanitizeCostCenter(editCostCenterInput.value),
+        isByEffort: Boolean(editIsByEffortInput.checked),
+        activity: editActivityInput.value.trim()
+      };
+
+      const validationMessage = validateEntry(updated);
+      if (validationMessage) {
+        alert(validationMessage);
+        return;
+      }
+
+      entries = entries.map((entry) => (entry.id === editingEntryId ? updated : entry));
+      synchronizeDaySharedFields(updated);
+      saveEntries();
+      closeEditDialog();
+      render();
+      setFormMessage("Eintrag wurde bearbeitet.", false);
+    });
+
+    editDeleteButton.addEventListener("click", () => {
+      if (!editingEntryId) return;
+      if (!confirm("Diesen Eintrag wirklich löschen?")) return;
+
+      entries = entries.filter((entry) => entry.id !== editingEntryId);
+      saveEntries();
+      closeEditDialog();
+      render();
+      setFormMessage("Eintrag wurde gelöscht.", false);
+    });
+
+    editCancelButton.addEventListener("click", closeEditDialog);
+
+    exportDialog.addEventListener("click", (event) => {
+      if (event.target === exportDialog) closeExportDialog();
+    });
+
+    editDialog.addEventListener("click", (event) => {
+      if (event.target === editDialog) closeEditDialog();
+    });
+
+    activityInput.addEventListener("input", autoGrowActivity);
+    editActivityInput.addEventListener("input", () => autoGrowTextarea(editActivityInput));
+
+    employeeCodeInput.addEventListener("input", () => {
+      employeeCodeInput.value = sanitizeEmployeeCode(employeeCodeInput.value);
+    });
+    editEmployeeCodeInput.addEventListener("input", () => {
+      editEmployeeCodeInput.value = sanitizeEmployeeCode(editEmployeeCodeInput.value);
+    });
+    costCenterInput.addEventListener("input", () => {
+      costCenterInput.value = sanitizeCostCenter(costCenterInput.value);
+    });
+    editCostCenterInput.addEventListener("input", () => {
+      editCostCenterInput.value = sanitizeCostCenter(editCostCenterInput.value);
+    });
+
+    if (templateButtons) {
+      templateButtons.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLButtonElement)) return;
+        const templateId = target.dataset.templateId || "";
+        if (!templateId) return;
+        applyTemplate(templateId);
+      });
+    }
+
+    function wireZeroPrefillClear(input) {
+      input.addEventListener("focus", () => {
+        const normalized = String(input.value || "").trim().replace(",", ".");
+        if (normalized === "0" || /^0\.0+$/.test(normalized)) {
+          input.value = "";
+        }
+      });
+    }
+
+    function wireBreakMinutesValidation(input, labelText) {
+      const setLastValid = () => {
+        const value = String(input.value || "").trim();
+        if (isValidBreakMinutesText(value)) {
+          input.dataset.lastValid = value;
+        }
+      };
+
+      setLastValid();
+      input.addEventListener("input", setLastValid);
+      input.addEventListener("blur", () => {
+        const value = String(input.value || "").trim();
+        if (isValidBreakMinutesText(value)) {
+          input.value = value;
+          input.dataset.lastValid = value;
+          return;
+        }
+        const fallback = typeof input.dataset.lastValid === "string" ? input.dataset.lastValid : "";
+        input.value = fallback;
+        alert(`${labelText}: Nur ganze Minuten erlaubt (z. B. 15). Werte wie 1,5 sind ungültig.`);
+        window.setTimeout(() => {
+          input.focus();
+          input.select();
+        }, 0);
+      });
+    }
+
+    function wirePlaceholderHideOnFocus(input) {
+      const initialPlaceholder = input.getAttribute("placeholder") || "";
+      if (!initialPlaceholder) return;
+      input.addEventListener("focus", () => {
+        input.setAttribute("placeholder", "");
+      });
+      input.addEventListener("blur", () => {
+        if (!input.getAttribute("placeholder")) {
+          input.setAttribute("placeholder", initialPlaceholder);
+        }
+      });
+    }
+    wireZeroPrefillClear(breakMinutesInput);
+    wireZeroPrefillClear(editBreakMinutesInput);
+    wireBreakMinutesValidation(breakMinutesInput, "Pause");
+    wireBreakMinutesValidation(editBreakMinutesInput, "Pause");
+    wirePlaceholderHideOnFocus(breakMinutesInput);
+    wirePlaceholderHideOnFocus(editBreakMinutesInput);
+    wirePlaceholderHideOnFocus(projectSuffixInput);
+    wirePlaceholderHideOnFocus(editProjectSuffixInput);
+
+    wireProjectSuffixInput(projectSuffixInput, syncMainProjectNumber);
+    wireProjectSuffixInput(editProjectSuffixInput, syncEditProjectNumber);
+
+    editDateInput.addEventListener("change", syncEditProjectNumber);
+
+    startTimeInput.addEventListener("blur", () => {
+      startTimeInput.value = normalizeTimeInputValue(startTimeInput.value);
+      render();
+    });
+    endTimeInput.addEventListener("blur", () => {
+      endTimeInput.value = normalizeTimeInputValue(endTimeInput.value);
+      render();
+    });
+    editStartTimeInput.addEventListener("blur", () => {
+      editStartTimeInput.value = normalizeTimeInputValue(editStartTimeInput.value);
+    });
+    editEndTimeInput.addEventListener("blur", () => {
+      editEndTimeInput.value = normalizeTimeInputValue(editEndTimeInput.value);
+    });
+
+    startTimeInput.addEventListener("change", render);
+    endTimeInput.addEventListener("change", render);
+    breakMinutesInput.addEventListener("input", render);
+
+    loadTemplatesFromCsv();
+    autoGrowActivity();
+    render();
+  </script>
+</body>
+</html>

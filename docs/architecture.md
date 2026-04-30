@@ -91,7 +91,8 @@ Phase 1:
 
 Phase 2:
 
-- Kostenstellenkatalog und Vorlagen aus CSV/Excel bewusst importieren.
+- Kostenstellenkatalog und vorhandene CSV-Vorlagen bewusst importieren.
+- Neue und geaenderte Vorlagen sollen spaeter in der Admin-/Buero-Weboberflaeche gepflegt werden, nicht ueber Excel-Dateien im Repository.
 - Mitarbeiter und Benutzer aus einer separaten, nicht committed Benutzerliste anlegen.
 
 Phase 3:

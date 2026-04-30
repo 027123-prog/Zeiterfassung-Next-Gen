@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Kostenstelle Auswahl Demo</title>
+  <style>
+    :root {
+      --panel: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #cfd8e3;
+      --fb: #e6f4ea;
+      --ba: #e8f0fe;
+      --ia: #fff7e6;
+      --da: #f2dfcc;
+      --neutral: #f3f4f6;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: linear-gradient(170deg, #e7effa, #f8fbff 45%, #e9fbfb);
+      color: var(--text);
+    }
+
+    .app {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 10px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: 0 8px 22px rgba(2, 6, 23, 0.08);
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      line-height: 1.15;
+    }
+
+    .muted {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    label {
+      display: grid;
+      gap: 4px;
+      margin-top: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    input {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font: inherit;
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .selected-line {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      min-height: 16px;
+    }
+
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.42);
+      z-index: 10;
+    }
+
+    .backdrop[hidden] {
+      display: none;
+    }
+
+    .sheet {
+      height: 100dvh;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 0;
+      display: grid;
+      grid-template-rows: auto auto auto;
+      align-content: start;
+      gap: 6px;
+      padding: 8px;
+      overflow: hidden;
+    }
+
+    .sheet-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .close-btn {
+      min-height: 28px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 8px;
+      padding: 2px 8px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #1e293b;
+    }
+
+    .top-groups {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 4px;
+    }
+
+    .section {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px;
+      display: grid;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .section h3 {
+      font-size: 11px;
+    }
+
+    .fb { background: var(--fb); }
+    .ba { background: var(--ba); }
+    .ia { background: var(--ia); }
+    .da { background: var(--da); }
+    .other { background: var(--neutral); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3px;
+    }
+
+    .item {
+      border: 1px solid rgba(15, 23, 42, 0.18);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.84);
+      padding: 4px;
+      display: grid;
+      gap: 1px;
+      text-align: left;
+      cursor: pointer;
+      min-width: 0;
+    }
+
+    .item small {
+      color: #334155;
+      font-size: 9px;
+      line-height: 1.05;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .code {
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      font-size: 12px;
+      color: #0b3a74;
+    }
+
+    .other .grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 4px;
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="panel">
+      <h1>Kostenstelle Auswahl (Demo)</h1>
+      <p class="muted">Kompaktansicht: 4 Hauptkategorien nebeneinander, ohne Scrollen.</p>
+      <label>Kostenstelle
+        <input id="costCenterInput" type="text" placeholder="Code wählen (z. B. FWS)" readonly />
+      </label>
+      <div id="selectedText" class="selected-line"></div>
+    </section>
+  </main>
+
+  <div id="pickerBackdrop" class="backdrop" hidden>
+    <div class="sheet">
+      <div class="sheet-head">
+        <h2>Kostenstelle wählen</h2>
+        <button id="closePicker" class="close-btn" type="button">Schließen</button>
+      </div>
+
+      <div class="top-groups">
+        <section class="section fb">
+          <h3>Fußboden</h3>
+          <div class="grid">
+            <button class="item" type="button" data-code="FWS" data-label="Fußboden Werkstatt"><small>Werkstatt</small><span class="code">FWS</span></button>
+            <button class="item" type="button" data-code="FMO" data-label="Fußboden Montage"><small>Montage</small><span class="code">FMO</span></button>
+            <button class="item" type="button" data-code="FAF" data-label="Fußboden Fahr/Lade"><small>Fahr/Lade</small><span class="code">FAF</span></button>
+          </div>
+        </section>
+
+        <section class="section ba">
+          <h3>Bauelemente</h3>
+          <div class="grid">
+            <button class="item" type="button" data-code="BWS" data-label="Bauelem. WS"><small>Werkstatt</small><span class="code">BWS</span></button>
+            <button class="item" type="button" data-code="BMO" data-label="Bauelem. Mont."><small>Montage</small><span class="code">BMO</span></button>
+            <button class="item" type="button" data-code="BAF" data-label="Bauelem. Fahr/Lade"><small>Fahr/Lade</small><span class="code">BAF</span></button>
+          </div>
+        </section>
+
+        <section class="section ia">
+          <h3>Innenausbau</h3>
+          <div class="grid">
+            <button class="item" type="button" data-code="IWS" data-label="Innenausbau WS"><small>Werkstatt</small><span class="code">IWS</span></button>
+            <button class="item" type="button" data-code="IMO" data-label="Innenausbau Mont."><small>Montage</small><span class="code">IMO</span></button>
+            <button class="item" type="button" data-code="IAF" data-label="Innenausbau Fahr/Lade"><small>Fahr/Lade</small><span class="code">IAF</span></button>
+          </div>
+        </section>
+
+        <section class="section da">
+          <h3>Dämmung/Lehm</h3>
+          <div class="grid">
+            <button class="item" type="button" data-code="DWS" data-label="Dämmung/Lehm WS"><small>Werkstatt</small><span class="code">DWS</span></button>
+            <button class="item" type="button" data-code="DMO" data-label="Dämmung/Lehm Mont."><small>Montage</small><span class="code">DMO</span></button>
+            <button class="item" type="button" data-code="DAF" data-label="Dämmung/Lehm Fahr/Lade"><small>Fahr/Lade</small><span class="code">DAF</span></button>
+          </div>
+        </section>
+      </div>
+
+      <section class="section other">
+        <h3>Weitere Kostenstellen</h3>
+        <div class="grid">
+          <button class="item" type="button" data-code="REK" data-label="Reklamation"><small>Reklamation</small><span class="code">REK</span></button>
+          <button class="item" type="button" data-code="WAR" data-label="Wartung"><small>Wartung</small><span class="code">WAR</span></button>
+          <button class="item" type="button" data-code="KRS" data-label="Innerbetriebliche Kleinaufträge"><small>Kleinaufträge</small><span class="code">KRS</span></button>
+          <button class="item" type="button" data-code="SIU" data-label="Schulung im Untern."><small>Schulung</small><span class="code">SIU</span></button>
+          <button class="item" type="button" data-code="ORD" data-label="Ordnung"><small>Ordnung</small><span class="code">ORD</span></button>
+          <button class="item" type="button" data-code="KDB" data-label="Kosten der Beschaffung"><small>Beschaffung</small><span class="code">KDB</span></button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const costCenterInput = document.getElementById("costCenterInput");
+    const selectedText = document.getElementById("selectedText");
+    const pickerBackdrop = document.getElementById("pickerBackdrop");
+    const closePicker = document.getElementById("closePicker");
+
+    function openPicker() {
+      pickerBackdrop.hidden = false;
+    }
+
+    function closePickerDialog() {
+      pickerBackdrop.hidden = true;
+    }
+
+    costCenterInput.addEventListener("click", openPicker);
+    closePicker.addEventListener("click", closePickerDialog);
+    pickerBackdrop.addEventListener("click", (event) => {
+      if (event.target === pickerBackdrop) closePickerDialog();
+    });
+
+    pickerBackdrop.querySelectorAll(".item").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const code = btn.dataset.code || "";
+        const label = btn.dataset.label || "";
+        costCenterInput.value = code;
+        selectedText.textContent = `${code} - ${label}`;
+        closePickerDialog();
+      });
+    });
+  </script>
+</body>
+</html>
