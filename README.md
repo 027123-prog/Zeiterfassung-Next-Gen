@@ -54,4 +54,4 @@ Der aktuelle Prototyp speichert noch keine Produktivdaten. Supabase ist nur als 
 
 ## Sicherheit
 
-Keine echten Betriebsdaten, Mail-Exporte, personenbezogenen Excel-Listen, `.env`-Dateien oder Secrets ins Repository legen. Eine echte Supabase-Migration und ein Push erfolgen erst nach Zustimmung von Nils.
+Keine echten Betriebsdaten, Mail-Exporte, personenbezogenen Excel-Listen, `.env`-Dateien oder Secrets ins Repository legen. Eine echte Supabase-Migration, ein Deployment oder weitere GitHub-Aenderungen erfolgen bewusst und nach lokaler Pruefung.

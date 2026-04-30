@@ -139,7 +139,7 @@ Nach dem erfolgreichen Speichern eines Demo-Tags sollte der naechste fachliche S
 
 ### Was gemacht wurde
 
-Der Projektstand wurde fuer GitHub vorbereitet. Als Repository ist `027123-prog/Zeiterfassung-Next-Gen` vorgesehen. Die Doku wurde auf dieses Repository aktualisiert.
+Der Projektstand wurde fuer GitHub vorbereitet und als Initial-Commit in `027123-prog/Zeiterfassung-Next-Gen` veroeffentlicht. Die Doku wurde auf dieses Repository aktualisiert.
 
 ### Warum
 
@@ -161,5 +161,4 @@ Nils moechte am Wochenende mit anderen Agenten am Projekt weiterarbeiten. Dafuer
 
 ### Naechste Schritte
 
-- Initial-Commit nach GitHub pushen.
 - Erste GitHub-Issues mit Akzeptanzkriterien anlegen.
